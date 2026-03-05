@@ -1,5 +1,5 @@
 ---
-name: agent-team
+name: agent-team-skill
 description: Manage team member information including skills, roles, and work assignments. Use when: (1) listing team members, (2) adding or updating member profiles, (3) checking member expertise for task assignment, (4) managing team division and collaboration.
 ---
 
