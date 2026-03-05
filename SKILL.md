@@ -1,6 +1,9 @@
 ---
 name: agent-team-skill
-description: Manage team member information including skills, roles, and work assignments. Use when: (1) listing team members, (2) adding or updating member profiles, (3) checking member expertise for task assignment, (4) managing team division and collaboration.
+description: "Manage team member information including skills, roles, and work assignments. Use when: (1) listing team members, (2) adding or updating member profiles, (3) checking member expertise for task assignment, (4) managing team division and collaboration."
+homepage: https://github.com/realqiyan/agent-team-skill
+metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
+allowed-tools: Bash(python3:*) Read(*.json)
 ---
 
 # Agent Team Management
