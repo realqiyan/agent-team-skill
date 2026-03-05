@@ -1,6 +1,6 @@
 ---
 name: agent-team-skill
-description: "Manage team member information including skills, roles, and work assignments. Use when: (1) listing team members, (2) adding or updating member profiles, (3) checking member expertise for task assignment, (4) managing team division and collaboration."
+description: "Manage team member information including skills, roles, and work assignments. IMPORTANT: (1) At initialization, use this skill to get the list of teammates to understand available agents and their capabilities. (2) When any agent's capabilities or responsibilities change, use this skill to update their teammate profile. Use when listing team members, adding/updating member profiles, checking member expertise for task assignment, or managing team collaboration."
 homepage: https://github.com/realqiyan/agent-team-skill
 metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
 allowed-tools: Bash(python3:*) Read(*.json)
@@ -8,26 +8,7 @@ allowed-tools: Bash(python3:*) Read(*.json)
 
 # Agent Team Management
 
-## Agent 初始化指南
-
-**重要：Agent 应在每次启动时执行以下命令了解团队成员：**
-
-```bash
-python3 ~/.openclaw/skills/agent-team-skill/scripts/team.py list
-```
-
-**当有 Agent 能力或职责变更时，使用以下命令更新团队成员信息：**
-
-```bash
-python3 ~/.openclaw/skills/agent-team-skill/scripts/team.py update \
-  --agent-id "<agent-id>" \
-  --name "<name>" \
-  --role "<role>" \
-  --enabled true \
-  --tags "<tag1,tag2>" \
-  --expertise "<skill1,skill2>" \
-  --not-good-at "<area1,area2>"
-```
+Manage team member information including skills, roles, and work assignments.
 
 ## Commands
 
@@ -79,16 +60,13 @@ python3 scripts/team.py update \
 ```
 
 Parameters:
-
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| --agent-id | Member unique identifier | Yes |
-| --name | Member name | Yes |
-| --role | Role/position | Yes |
-| --enabled | Enable status (true/false) | Yes |
-| --tags | Tags (comma-separated) | Yes |
-| --expertise | Skills (comma-separated) | Yes |
-| --not-good-at | Weak areas (comma-separated) | Yes |
+- `--agent-id`: Member unique identifier (required)
+- `--name`: Member name (required)
+- `--role`: Role/position (required)
+- `--enabled`: Enable status (true/false, required)
+- `--tags`: Tags (comma-separated, required)
+- `--expertise`: Skills (comma-separated, required)
+- `--not-good-at`: Weak areas (comma-separated, required)
 
 ### Reset Data
 
@@ -106,7 +84,7 @@ Team data is stored at `~/.agent-team/team.json`. The directory is created autom
 
 ## Use Cases
 
-- **Team Building**: Record all team members and their skill information
-- **Task Assignment**: Assign tasks based on member expertise and tags
-- **Capability Assessment**: Understand each member's strengths and weaknesses
-- **Team Collaboration**: Quickly find members with specific skills
+- Team Building: Record all team members and their skill information
+- Task Assignment: Assign tasks based on member expertise and tags
+- Capability Assessment: Understand each member's strengths and weaknesses
+- Team Collaboration: Quickly find members with specific skills
