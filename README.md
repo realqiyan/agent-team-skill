@@ -14,15 +14,15 @@
 ## 安装方法
 
 ```bash
-# 克隆仓库
-git clone <repository-url>
-cd agent-team
+# 通过 ClawHub 安装
+clawhub install agent-team-skill
+
+# 或克隆仓库
+git clone https://github.com/realqiyan/agent-team-skill.git
+cd agent-team-skill
 
 # 确保安装了 Python 3.10+
 python3 --version
-
-# 安装测试依赖（可选）
-pip install pytest
 ```
 
 ## 使用方法
@@ -35,21 +35,43 @@ python3 scripts/team.py <command> [options]
 
 ### 列出成员
 
-列出所有团队成员（表格格式）：
+列出所有团队成员（YAML 格式）：
 
 ```bash
 python3 scripts/team.py list
 ```
 
 输出示例：
-```
-+-------------+--------+------------+---------+------------------+------------------+------------------+
-| Agent ID    | Name   | Role       | Enabled | Tags             | Expertise        | Not Good At      |
-+-------------+--------+------------+---------+------------------+------------------+------------------+
-| agent-001   | Alice  | Developer  | true    | backend, api     | python, go       | frontend         |
-| agent-002   | Bob    | Designer   | true    | ui, ux           | figma, css       | backend          |
-+-------------+--------+------------+---------+------------------+------------------+------------------+
-Total: 2 member(s)
+```yaml
+team:
+  - agent_id: alice
+    name: Alice
+    role: Backend Developer
+    enabled: true
+    tags:
+      - backend
+      - api
+      - database
+    expertise:
+      - python
+      - go
+      - postgresql
+    not_good_at:
+      - frontend
+      - design
+  - agent_id: bob
+    name: Bob
+    role: Designer
+    enabled: true
+    tags:
+      - ui
+      - ux
+    expertise:
+      - figma
+      - css
+    not_good_at:
+      - backend
+# Total: 2 member(s)
 ```
 
 ### 添加/更新成员
@@ -68,16 +90,13 @@ python3 scripts/team.py update \
 ```
 
 参数说明：
-
-| 参数 | 说明 | 必需 |
-|------|------|------|
-| --agent-id | 成员唯一标识符 | 是 |
-| --name | 成员名称 | 是 |
-| --role | 角色/职位 | 是 |
-| --enabled | 启用状态 (true/false) | 是 |
-| --tags | 标签（逗号分隔） | 是 |
-| --expertise | 专长技能（逗号分隔） | 是 |
-| --not-good-at | 弱项领域（逗号分隔） | 是 |
+- `--agent-id`: 成员唯一标识符 (必需)
+- `--name`: 成员名称 (必需)
+- `--role`: 角色/职位 (必需)
+- `--enabled`: 启用状态 true/false (必需)
+- `--tags`: 标签，逗号分隔 (必需)
+- `--expertise`: 专长技能，逗号分隔 (必需)
+- `--not-good-at`: 弱项领域，逗号分隔 (必需)
 
 ### 重置数据
 
@@ -96,24 +115,6 @@ python3 scripts/team.py --data-file /path/to/team.json list
 ```
 
 默认数据存储位置：`~/.agent-team/team.json`
-
-## 测试方法
-
-运行测试：
-
-```bash
-# 安装 pytest
-pip install pytest
-
-# 运行所有测试
-pytest tests/
-
-# 运行特定测试
-pytest tests/test_team.py -v
-
-# 运行带覆盖率的测试
-pytest tests/ --cov=scripts
-```
 
 ## 数据文件说明
 
@@ -137,11 +138,7 @@ pytest tests/ --cov=scripts
 
 ## 用例场景
 
-- **团队建设**：记录所有成员及其技能信息
-- **任务分配**：根据成员专长和标签分配任务
-- **能力评估**：了解每个成员的优势和劣势
-- **团队协作**：快速找到具有特定技能的成员
-
-## 许可证
-
-MIT License
+- Team Building: 记录所有团队成员及其技能信息
+- Task Assignment: 根据成员专长和标签分配任务
+- Capability Assessment: 了解每个成员的优势和弱点
+- Team Collaboration: 快速找到具有特定技能的成员
