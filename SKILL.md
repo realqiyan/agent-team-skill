@@ -82,9 +82,129 @@ This resets the team data to `{"team": {}}`.
 
 Team data is stored at `~/.agent-team/team.json`. The directory is created automatically if it doesn't exist.
 
+## Task Management
+
+Manage team tasks including creation, assignment, and status tracking. All task commands are executed via the `task.py` script:
+
+```bash
+python3 scripts/task.py <command> [options]
+```
+
+### Add Task
+
+Create a new task:
+
+```bash
+python3 scripts/task.py add \
+  --title "Implement API endpoint" \
+  --description "Create REST API for user management" \
+  --priority high \
+  --assignee "agent-001" \
+  --tags "backend,api,urgent"
+```
+
+Parameters:
+- `--title`: Task title (required)
+- `--description`: Task description (optional, default: empty)
+- `--priority`: Task priority - low/medium/high/urgent (optional, default: medium)
+- `--assignee`: Assign to agent by agent_id (optional)
+- `--tags`: Tags (comma separated, optional)
+
+### List Tasks
+
+List all tasks in YAML format, optionally filtered:
+
+```bash
+python3 scripts/task.py list [--status STATUS] [--assignee AGENT_ID]
+```
+
+Output example:
+```yaml
+tasks:
+  - id: task-a1b2c3d4
+    title: Implement API endpoint
+    description: Create REST API for user management
+    assignee: agent-001
+    status: assigned
+    priority: high
+    tags:
+      - backend
+      - api
+      - urgent
+    result: (none)
+    created_at: 2024-01-15 10:30:00
+    updated_at: 2024-01-15 10:30:00
+# Total: 1 task(s)
+```
+
+Filter options:
+- `--status`: Filter by status (pending/assigned/in_progress/completed/blocked)
+- `--assignee`: Filter by assignee agent_id
+
+### Update Task
+
+Update an existing task:
+
+```bash
+python3 scripts/task.py update --id task-a1b2c3d4 --status in_progress
+```
+
+Parameters:
+- `--id`: Task ID (required)
+- `--status`: Update status (pending/assigned/in_progress/completed/blocked)
+- `--result`: Task result
+- `--priority`: Update priority (low/medium/high/urgent)
+- `--title`: Update title
+- `--description`: Update description
+- `--tags`: Update tags (comma separated)
+
+### Assign Task
+
+Assign a task to a team member:
+
+```bash
+python3 scripts/task.py assign --id task-a1b2c3d4 --assignee agent-001
+```
+
+This automatically changes status from `pending` to `assigned` if applicable.
+
+### Complete Task
+
+Mark a task as completed and record the result:
+
+```bash
+python3 scripts/task.py complete --id task-a1b2c3d4 --result "API endpoint implemented and tested"
+```
+
+Parameters:
+- `--id`: Task ID (required)
+- `--result`: Task result (required)
+
+### Show Task Details
+
+Show details of a specific task:
+
+```bash
+python3 scripts/task.py show --id task-a1b2c3d4
+```
+
+### Reset Task Data
+
+Clear all task data and reset to empty state:
+
+```bash
+python3 scripts/task.py reset
+```
+
+## Task Data Storage
+
+Task data is stored at `~/.agent-team/tasks.json`. The directory is created automatically if it doesn't exist.
+
 ## Use Cases
 
 - Team Building: Record all team members and their skill information
 - Task Assignment: Assign tasks based on member expertise and tags
+- Task Tracking: Track task status from creation to completion
+- Result Synchronization: Record task results for team coordination
 - Capability Assessment: Understand each member's strengths and weaknesses
 - Team Collaboration: Quickly find members with specific skills
