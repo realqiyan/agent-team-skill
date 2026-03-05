@@ -8,7 +8,26 @@ allowed-tools: Bash(python3:*) Read(*.json)
 
 # Agent Team Management
 
-Manage team member information including skills, roles, and work assignments.
+## Agent 初始化指南
+
+**重要：Agent 应在每次启动时执行以下命令了解团队成员：**
+
+```bash
+python3 ~/.openclaw/skills/agent-team-skill/scripts/team.py list
+```
+
+**当有 Agent 能力或职责变更时，使用以下命令更新团队成员信息：**
+
+```bash
+python3 ~/.openclaw/skills/agent-team-skill/scripts/team.py update \
+  --agent-id "<agent-id>" \
+  --name "<name>" \
+  --role "<role>" \
+  --enabled true \
+  --tags "<tag1,tag2>" \
+  --expertise "<skill1,skill2>" \
+  --not-good-at "<area1,area2>"
+```
 
 ## Commands
 
@@ -20,20 +39,28 @@ python3 scripts/team.py <command> [options]
 
 ### List Members
 
-List all team members in table format:
+List all team members in YAML format:
 
 ```bash
 python3 scripts/team.py list
 ```
 
 Output example:
-```
-+-------------+--------+------------+---------+------------------+------------------+------------------+
-| Agent ID    | Name   | Role       | Enabled | Tags             | Expertise        | Not Good At      |
-+-------------+--------+------------+---------+------------------+------------------+------------------+
-| agent-001   | Alice  | Developer  | true    | backend, api     | python, go       | frontend         |
-| agent-002   | Bob    | Designer   | true    | ui, ux           | figma, css       | backend          |
-+-------------+--------+------------+---------+------------------+------------------+------------------+
+```yaml
+team:
+  - agent_id: q
+    name: Q
+    role: 主助手/协调者
+    enabled: true
+    tags:
+      - 协调
+      - 路由
+    expertise:
+      - 任务分发
+      - 日程管理
+    not_good_at:
+      - 深度开发
+# Total: 1 member(s)
 ```
 
 ### Add/Update Member

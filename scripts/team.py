@@ -62,7 +62,7 @@ def reset_data() -> None:
 
 
 def list_members() -> None:
-    """List all team members in table format."""
+    """List all team members in YAML format."""
     data = load_data()
     team = data.get("team", {})
 
@@ -70,43 +70,29 @@ def list_members() -> None:
         print("No team members found.")
         return
 
-    headers = ["Agent ID", "Name", "Role", "Enabled", "Tags", "Expertise", "Not Good At"]
-    col_widths = [12, 10, 15, 8, 20, 20, 20]
-
-    # Print header
-    def print_separator():
-        parts = ["+" + "-" * (w + 2) for w in col_widths]
-        print("".join(parts) + "+")
-
-    def print_row(values):
-        parts = []
-        for i, val in enumerate(values):
-            truncated = str(val)[:col_widths[i]]
-            parts.append(f"| {truncated:<{col_widths[i]}}")
-        print("".join(parts) + "|")
-
-    print_separator()
-    print_row(headers)
-    print_separator()
-
+    print("team:")
     for member_id, member in team.items():
-        tags = ", ".join(member.get("tags", []))
-        expertise = ", ".join(member.get("expertise", []))
-        not_good_at = ", ".join(member.get("not_good_at", []))
+        print(f"  - agent_id: {member.get('agent_id', '')}")
+        print(f"    name: {member.get('name', '')}")
+        print(f"    role: {member.get('role', '')}")
+        print(f"    enabled: {str(member.get('enabled', '')).lower()}")
+        
+        tags = member.get("tags", [])
+        print("    tags:")
+        for tag in tags:
+            print(f"      - {tag}")
+        
+        expertise = member.get("expertise", [])
+        print("    expertise:")
+        for exp in expertise:
+            print(f"      - {exp}")
+        
+        not_good_at = member.get("not_good_at", [])
+        print("    not_good_at:")
+        for item in not_good_at:
+            print(f"      - {item}")
 
-        row = [
-            member.get("agent_id", "")[:col_widths[0]],
-            member.get("name", "")[:col_widths[1]],
-            member.get("role", "")[:col_widths[2]],
-            str(member.get("enabled", ""))[:col_widths[3]],
-            tags[:col_widths[4]],
-            expertise[:col_widths[5]],
-            not_good_at[:col_widths[6]],
-        ]
-        print_row(row)
-
-    print_separator()
-    print(f"Total: {len(team)} member(s)")
+    print(f"# Total: {len(team)} member(s)")
 
 
 def update_member(
