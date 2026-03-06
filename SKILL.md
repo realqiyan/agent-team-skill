@@ -1,6 +1,6 @@
 ---
 name: agent-team-skill
-description: "Manage team member information including skills, roles, and work assignments. IMPORTANT: (1) At initialization, use this skill to get the list of teammates to understand available agents and their capabilities. (2) When any agent's capabilities or responsibilities change, use this skill to update their teammate profile. Use when listing team members, adding/updating member profiles, checking member expertise for task assignment, or managing team collaboration."
+description: "团队管理与任务协作。IMPORTANT: (1) 会话启动时执行 team list 查询团队成员。(2) 接到任务时：查团队 → 找专家 → task 管理跟踪 → 转交执行。(3) 所有任务必须交给最擅长的伙伴执行。"
 homepage: https://github.com/realqiyan/agent-team-skill
 metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
 allowed-tools: Bash(python3:*) Read(*.json)
