@@ -186,6 +186,25 @@ python3 scripts/task.py add \
 - `--priority`: 优先级 (low/medium/high/urgent，默认 medium)
 - `--assignee`: 指派给成员
 - `--tags`: 标签，逗号分隔
+- `--extra`: 扩展元数据 (JSON 字符串)
+
+#### 使用扩展字段
+
+`--extra` 参数允许存储任意自定义元数据：
+
+```bash
+python3 scripts/task.py add \
+  --title "API 开发" \
+  --priority high \
+  --extra '{"project": "alpha", "deadline": "2024-12-31", "estimate_hours": 8}'
+```
+
+扩展字段可以包含任意 JSON 对象，用于存储额外的任务信息，如：
+- 项目关联信息
+- 截止日期
+- 预估工时
+- 自定义标签或分类
+- 外部系统引用 ID
 
 #### 列出任务
 
@@ -217,6 +236,23 @@ python3 scripts/task.py update \
   --priority urgent
 ```
 
+可更新字段：
+- `--status`: 更新状态
+- `--priority`: 更新优先级
+- `--title`: 更新标题
+- `--description`: 更新描述
+- `--tags`: 更新标签 (逗号分隔)
+- `--result`: 更新结果
+- `--extra`: 更新扩展字段 (JSON 字符串)
+
+更新扩展字段示例：
+
+```bash
+python3 scripts/task.py update \
+  --id task-abc123 \
+  --extra '{"project": "beta", "notes": "等待设计稿"}'
+```
+
 #### 指派任务
 
 ```bash
@@ -245,6 +281,10 @@ python3 scripts/task.py complete --id task-abc123 --result "已完成 JWT 认证
       "priority": "high",
       "tags": ["backend", "auth"],
       "result": "已完成 JWT 认证实现",
+      "extra": {
+        "project": "alpha",
+        "deadline": "2024-12-31"
+      },
       "created_at": "2026-03-06T14:00:00",
       "updated_at": "2026-03-06T16:30:00"
     }
@@ -262,4 +302,4 @@ python3 -m pytest tests/
 
 测试覆盖：
 - `test_team.py` - 成员管理测试 (14 个测试)
-- `test_task.py` - 任务管理测试 (45 个测试)
+- `test_task.py` - 任务管理测试 (53 个测试)

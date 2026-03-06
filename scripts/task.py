@@ -83,6 +83,7 @@ def add_task(
     priority: str,
     assignee: str | None,
     tags: str,
+    extra: str | None,
 ) -> None:
     """Create a new task."""
     data = load_data()
@@ -93,6 +94,15 @@ def add_task(
     # Determine initial status based on assignee
     status = "assigned" if assignee else "pending"
 
+    # Parse extra JSON if provided
+    extra_data = {}
+    if extra:
+        try:
+            extra_data = json.loads(extra)
+        except json.JSONDecodeError:
+            print(f"Warning: Invalid JSON for --extra, using empty object")
+            extra_data = {}
+
     task = {
         "id": task_id,
         "title": title,
@@ -102,6 +112,7 @@ def add_task(
         "priority": priority,
         "tags": [t.strip() for t in tags.split(",") if t.strip()],
         "result": "",
+        "extra": extra_data,
         "created_at": now,
         "updated_at": now,
     }
@@ -115,6 +126,8 @@ def add_task(
     print(f"  Status: {status}")
     if assignee:
         print(f"  Assignee: {assignee}")
+    if extra_data:
+        print(f"  Extra: {json.dumps(extra_data, ensure_ascii=False)}")
 
 
 def list_tasks(status: str | None, assignee: str | None) -> None:
@@ -154,6 +167,13 @@ def list_tasks(status: str | None, assignee: str | None) -> None:
             print(f"      - {tag}")
 
         print(f"    result: {task.get('result', '') or '(none)'}")
+
+        extra = task.get("extra", {})
+        if extra:
+            print(f"    extra: {json.dumps(extra, ensure_ascii=False)}")
+        else:
+            print(f"    extra: {{}}")
+
         print(f"    created_at: {format_datetime(task.get('created_at', ''))}")
         print(f"    updated_at: {format_datetime(task.get('updated_at', ''))}")
 
@@ -168,6 +188,7 @@ def update_task(
     title: str | None,
     description: str | None,
     tags: str | None,
+    extra: str | None,
 ) -> None:
     """Update an existing task."""
     data = load_data()
@@ -198,6 +219,12 @@ def update_task(
     if tags is not None:
         task["tags"] = [t.strip() for t in tags.split(",") if t.strip()]
         updated = True
+    if extra is not None:
+        try:
+            task["extra"] = json.loads(extra)
+            updated = True
+        except json.JSONDecodeError:
+            print(f"Warning: Invalid JSON for --extra, skipping update")
 
     if updated:
         task["updated_at"] = datetime.now().isoformat()
@@ -272,6 +299,13 @@ def show_task(task_id: str) -> None:
         print(f"  - {tag}")
 
     print(f"result: {task.get('result', '') or '(none)'}")
+
+    extra = task.get("extra", {})
+    if extra:
+        print(f"extra: {json.dumps(extra, ensure_ascii=False)}")
+    else:
+        print(f"extra: {{}}")
+
     print(f"created_at: {format_datetime(task.get('created_at', ''))}")
     print(f"updated_at: {format_datetime(task.get('updated_at', ''))}")
 
@@ -299,6 +333,7 @@ def main():
     )
     add_parser.add_argument("--assignee", help="Assign to agent (optional)")
     add_parser.add_argument("--tags", default="", help="Tags (comma separated)")
+    add_parser.add_argument("--extra", help="Extra metadata (JSON string)")
 
     # list command
     list_parser = subparsers.add_parser("list", help="List all tasks")
@@ -326,6 +361,7 @@ def main():
     update_parser.add_argument("--title", help="Update title")
     update_parser.add_argument("--description", help="Update description")
     update_parser.add_argument("--tags", help="Update tags (comma separated)")
+    update_parser.add_argument("--extra", help="Update extra metadata (JSON string)")
 
     # assign command
     assign_parser = subparsers.add_parser("assign", help="Assign a task to a member")
@@ -360,6 +396,7 @@ def main():
             priority=args.priority,
             assignee=args.assignee,
             tags=args.tags,
+            extra=args.extra,
         )
     elif args.command == "list":
         list_tasks(status=args.status, assignee=args.assignee)
@@ -372,6 +409,7 @@ def main():
             title=args.title,
             description=args.description,
             tags=args.tags,
+            extra=args.extra,
         )
     elif args.command == "assign":
         assign_task(task_id=args.id, assignee=args.assignee)

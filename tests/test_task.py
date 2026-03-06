@@ -52,6 +52,7 @@ class TestAddCommand:
             priority="medium",
             assignee=None,
             tags="",
+            extra=None,
         )
         captured = capsys.readouterr()
 
@@ -67,6 +68,7 @@ class TestAddCommand:
         assert saved_task["title"] == "New Task"
         assert saved_task["status"] == "pending"
         assert saved_task["assignee"] == ""
+        assert saved_task["extra"] == {}
 
     def test_add_task_with_assignee(self, temp_data_file, capsys):
         """Test adding a task with an assignee sets status to assigned."""
@@ -76,6 +78,7 @@ class TestAddCommand:
             priority="high",
             assignee="agent-001",
             tags="backend, api",
+            extra=None,
         )
         captured = capsys.readouterr()
 
@@ -97,11 +100,52 @@ class TestAddCommand:
             priority="low",
             assignee=None,
             tags=" tag1 , tag2 , tag3 ",
+            extra=None,
         )
 
         data = task.load_data()
         saved_task = list(data["tasks"].values())[0]
         assert saved_task["tags"] == ["tag1", "tag2", "tag3"]
+
+    def test_add_task_with_extra(self, temp_data_file, capsys):
+        """Test adding a task with extra metadata."""
+        task.add_task(
+            title="Task with Extra",
+            description="Task with extra metadata",
+            priority="high",
+            assignee="agent-001",
+            tags="backend",
+            extra='{"project": "alpha", "deadline": "2024-12-31"}',
+        )
+        captured = capsys.readouterr()
+
+        assert "Created task:" in captured.out
+        assert "Extra:" in captured.out
+
+        # Verify extra data was saved
+        data = task.load_data()
+        saved_task = list(data["tasks"].values())[0]
+        assert saved_task["extra"]["project"] == "alpha"
+        assert saved_task["extra"]["deadline"] == "2024-12-31"
+
+    def test_add_task_with_invalid_extra(self, temp_data_file, capsys):
+        """Test adding a task with invalid JSON for extra uses empty object."""
+        task.add_task(
+            title="Task with Invalid Extra",
+            description="",
+            priority="medium",
+            assignee=None,
+            tags="",
+            extra="not valid json",
+        )
+        captured = capsys.readouterr()
+
+        assert "Warning: Invalid JSON" in captured.out
+
+        # Verify empty extra is used
+        data = task.load_data()
+        saved_task = list(data["tasks"].values())[0]
+        assert saved_task["extra"] == {}
 
     def test_add_task_priority_levels(self, temp_data_file):
         """Test adding tasks with different priority levels."""
@@ -114,6 +158,7 @@ class TestAddCommand:
                 priority=priority,
                 assignee=None,
                 tags="",
+                extra=None,
             )
 
         data = task.load_data()
@@ -135,8 +180,8 @@ class TestListCommand:
     def test_list_with_tasks(self, temp_data_file, capsys):
         """Test listing with existing tasks."""
         # Add some tasks
-        task.add_task(title="Task 1", description="", priority="high", assignee=None, tags="")
-        task.add_task(title="Task 2", description="", priority="low", assignee=None, tags="")
+        task.add_task(title="Task 1", description="", priority="high", assignee=None, tags="", extra=None)
+        task.add_task(title="Task 2", description="", priority="low", assignee=None, tags="", extra=None)
 
         task.list_tasks(status=None, assignee=None)
         captured = capsys.readouterr()
@@ -148,8 +193,8 @@ class TestListCommand:
     def test_list_filter_by_status(self, temp_data_file, capsys):
         """Test filtering tasks by status."""
         # Add tasks with different statuses
-        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="")
-        task.add_task(title="Assigned Task", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="", extra=None)
+        task.add_task(title="Assigned Task", description="", priority="medium", assignee="agent-001", tags="", extra=None)
         # Clear the captured output from add_task calls
         capsys.readouterr()
 
@@ -161,8 +206,8 @@ class TestListCommand:
 
     def test_list_filter_by_assignee(self, temp_data_file, capsys):
         """Test filtering tasks by assignee."""
-        task.add_task(title="Task A", description="", priority="medium", assignee="agent-001", tags="")
-        task.add_task(title="Task B", description="", priority="medium", assignee="agent-002", tags="")
+        task.add_task(title="Task A", description="", priority="medium", assignee="agent-001", tags="", extra=None)
+        task.add_task(title="Task B", description="", priority="medium", assignee="agent-002", tags="", extra=None)
         # Clear the captured output from add_task calls
         capsys.readouterr()
 
@@ -174,12 +219,29 @@ class TestListCommand:
 
     def test_list_filter_no_match(self, temp_data_file, capsys):
         """Test filtering returns no match message."""
-        task.add_task(title="Task", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="Task", description="", priority="medium", assignee="agent-001", tags="", extra=None)
 
         task.list_tasks(status="pending", assignee=None)
         captured = capsys.readouterr()
 
         assert "No tasks match the filter criteria" in captured.out
+
+    def test_list_shows_extra(self, temp_data_file, capsys):
+        """Test that list command shows extra field."""
+        task.add_task(
+            title="Task with Extra",
+            description="",
+            priority="medium",
+            assignee=None,
+            tags="",
+            extra='{"key": "value"}',
+        )
+        capsys.readouterr()  # Clear add output
+
+        task.list_tasks(status=None, assignee=None)
+        captured = capsys.readouterr()
+
+        assert "extra:" in captured.out
 
 
 class TestUpdateCommand:
@@ -187,11 +249,11 @@ class TestUpdateCommand:
 
     def test_update_task_status(self, temp_data_file, capsys):
         """Test updating task status."""
-        task.add_task(title="Task to Update", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="Task to Update", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status="in_progress", result=None, priority=None, title=None, description=None, tags=None)
+        task.update_task(task_id=task_id, status="in_progress", result=None, priority=None, title=None, description=None, tags=None, extra=None)
         captured = capsys.readouterr()
 
         assert f"Updated task: {task_id}" in captured.out
@@ -202,33 +264,33 @@ class TestUpdateCommand:
 
     def test_update_task_result(self, temp_data_file, capsys):
         """Test updating task result."""
-        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status=None, result="Work completed", priority=None, title=None, description=None, tags=None)
+        task.update_task(task_id=task_id, status=None, result="Work completed", priority=None, title=None, description=None, tags=None, extra=None)
 
         data = task.load_data()
         assert data["tasks"][task_id]["result"] == "Work completed"
 
     def test_update_task_priority(self, temp_data_file):
         """Test updating task priority."""
-        task.add_task(title="Task", description="", priority="low", assignee=None, tags="")
+        task.add_task(title="Task", description="", priority="low", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status=None, result=None, priority="urgent", title=None, description=None, tags=None)
+        task.update_task(task_id=task_id, status=None, result=None, priority="urgent", title=None, description=None, tags=None, extra=None)
 
         data = task.load_data()
         assert data["tasks"][task_id]["priority"] == "urgent"
 
     def test_update_task_title_and_description(self, temp_data_file):
         """Test updating task title and description."""
-        task.add_task(title="Old Title", description="Old desc", priority="medium", assignee=None, tags="")
+        task.add_task(title="Old Title", description="Old desc", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status=None, result=None, priority=None, title="New Title", description="New desc", tags=None)
+        task.update_task(task_id=task_id, status=None, result=None, priority=None, title="New Title", description="New desc", tags=None, extra=None)
 
         data = task.load_data()
         assert data["tasks"][task_id]["title"] == "New Title"
@@ -236,22 +298,47 @@ class TestUpdateCommand:
 
     def test_update_task_tags(self, temp_data_file):
         """Test updating task tags."""
-        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="old")
+        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="old", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags="new, updated")
+        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags="new, updated", extra=None)
 
         data = task.load_data()
         assert data["tasks"][task_id]["tags"] == ["new", "updated"]
 
-    def test_update_task_no_changes(self, temp_data_file, capsys):
-        """Test updating with no changes."""
-        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="")
+    def test_update_task_extra(self, temp_data_file):
+        """Test updating task extra field."""
+        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
-        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags=None)
+        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags=None, extra='{"new_key": "new_value"}')
+
+        data = task.load_data()
+        assert data["tasks"][task_id]["extra"]["new_key"] == "new_value"
+
+    def test_update_task_extra_invalid_json(self, temp_data_file, capsys):
+        """Test updating task extra with invalid JSON."""
+        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="", extra='{"initial": "value"}')
+        data = task.load_data()
+        task_id = list(data["tasks"].keys())[0]
+
+        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags=None, extra="invalid json")
+        captured = capsys.readouterr()
+
+        assert "Warning: Invalid JSON" in captured.out
+        # Original extra should be preserved
+        data = task.load_data()
+        assert data["tasks"][task_id]["extra"]["initial"] == "value"
+
+    def test_update_task_no_changes(self, temp_data_file, capsys):
+        """Test updating with no changes."""
+        task.add_task(title="Task", description="", priority="medium", assignee=None, tags="", extra=None)
+        data = task.load_data()
+        task_id = list(data["tasks"].keys())[0]
+
+        task.update_task(task_id=task_id, status=None, result=None, priority=None, title=None, description=None, tags=None, extra=None)
         captured = capsys.readouterr()
 
         assert f"No changes made to task: {task_id}" in captured.out
@@ -259,7 +346,7 @@ class TestUpdateCommand:
     def test_update_task_not_found(self, temp_data_file, capsys):
         """Test updating non-existent task."""
         with pytest.raises(SystemExit) as exc_info:
-            task.update_task(task_id="nonexistent", status="completed", result=None, priority=None, title=None, description=None, tags=None)
+            task.update_task(task_id="nonexistent", status="completed", result=None, priority=None, title=None, description=None, tags=None, extra=None)
 
         assert exc_info.value.code == 1
         captured = capsys.readouterr()
@@ -271,7 +358,7 @@ class TestAssignCommand:
 
     def test_assign_task(self, temp_data_file, capsys):
         """Test assigning a task."""
-        task.add_task(title="Unassigned Task", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="Unassigned Task", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -286,7 +373,7 @@ class TestAssignCommand:
 
     def test_assign_updates_status_from_pending(self, temp_data_file):
         """Test that assigning a pending task changes status to assigned."""
-        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -300,7 +387,7 @@ class TestAssignCommand:
 
     def test_assign_does_not_change_completed_status(self, temp_data_file):
         """Test that assigning a completed task doesn't change its status."""
-        task.add_task(title="Task", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="Task", description="", priority="medium", assignee="agent-001", tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -329,7 +416,7 @@ class TestCompleteCommand:
 
     def test_complete_task(self, temp_data_file, capsys):
         """Test completing a task."""
-        task.add_task(title="Task to Complete", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="Task to Complete", description="", priority="medium", assignee="agent-001", tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -359,7 +446,7 @@ class TestShowCommand:
 
     def test_show_task(self, temp_data_file, capsys):
         """Test showing a specific task."""
-        task.add_task(title="Show Test Task", description="Test description", priority="high", assignee="agent-001", tags="test, demo")
+        task.add_task(title="Show Test Task", description="Test description", priority="high", assignee="agent-001", tags="test, demo", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -374,10 +461,11 @@ class TestShowCommand:
         assert "priority: high" in captured.out
         assert "- test" in captured.out
         assert "- demo" in captured.out
+        assert "extra:" in captured.out
 
     def test_show_task_unassigned(self, temp_data_file, capsys):
         """Test showing task with no assignee."""
-        task.add_task(title="Unassigned", description="", priority="low", assignee=None, tags="")
+        task.add_task(title="Unassigned", description="", priority="low", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -385,6 +473,19 @@ class TestShowCommand:
         captured = capsys.readouterr()
 
         assert "assignee: (unassigned)" in captured.out
+
+    def test_show_task_with_extra(self, temp_data_file, capsys):
+        """Test showing task with extra field."""
+        task.add_task(title="Task with Extra", description="", priority="medium", assignee=None, tags="", extra='{"project": "alpha", "count": 42}')
+        data = task.load_data()
+        task_id = list(data["tasks"].keys())[0]
+
+        task.show_task(task_id=task_id)
+        captured = capsys.readouterr()
+
+        assert "extra:" in captured.out
+        assert "project" in captured.out
+        assert "alpha" in captured.out
 
     def test_show_task_not_found(self, temp_data_file, capsys):
         """Test showing non-existent task."""
@@ -402,8 +503,8 @@ class TestResetCommand:
     def test_reset_clears_data(self, temp_data_file, capsys):
         """Test that reset clears all task data."""
         # Add some tasks
-        task.add_task(title="Task 1", description="", priority="medium", assignee=None, tags="")
-        task.add_task(title="Task 2", description="", priority="high", assignee="agent-001", tags="")
+        task.add_task(title="Task 1", description="", priority="medium", assignee=None, tags="", extra=None)
+        task.add_task(title="Task 2", description="", priority="high", assignee="agent-001", tags="", extra=None)
 
         # Verify tasks exist
         data = task.load_data()
@@ -477,7 +578,7 @@ class TestEdgeCases:
         custom_file = tmp_path / "custom_tasks.json"
         task.set_data_file(str(custom_file))
 
-        task.add_task(title="Custom Path Task", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="Custom Path Task", description="", priority="medium", assignee=None, tags="", extra=None)
 
         assert custom_file.exists()
         task.set_data_file(None)
@@ -513,10 +614,39 @@ class TestCLI:
         assert "Created task:" in captured.out
         assert "Title: CLI Task" in captured.out
 
+    def test_add_cli_with_extra(self, temp_data_file, monkeypatch, capsys):
+        """Test add command via CLI with extra field."""
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "task.py",
+                "--data-file",
+                str(temp_data_file),
+                "add",
+                "--title",
+                "Task with Extra",
+                "--priority",
+                "high",
+                "--extra",
+                '{"key": "value", "number": 123}',
+            ],
+        )
+        task.main()
+        captured = capsys.readouterr()
+        assert "Created task:" in captured.out
+        assert "Extra:" in captured.out
+
+        # Verify extra was saved
+        data = task.load_data()
+        saved_task = list(data["tasks"].values())[0]
+        assert saved_task["extra"]["key"] == "value"
+        assert saved_task["extra"]["number"] == 123
+
     def test_list_cli(self, temp_data_file, monkeypatch, capsys):
         """Test list command via CLI."""
         # Add a task first
-        task.add_task(title="List Test", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="List Test", description="", priority="medium", assignee=None, tags="", extra=None)
 
         monkeypatch.setattr(sys, "argv", ["task.py", "--data-file", str(temp_data_file), "list"])
         task.main()
@@ -525,7 +655,7 @@ class TestCLI:
 
     def test_update_cli(self, temp_data_file, monkeypatch, capsys):
         """Test update command via CLI."""
-        task.add_task(title="To Update", description="", priority="low", assignee=None, tags="")
+        task.add_task(title="To Update", description="", priority="low", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -549,9 +679,37 @@ class TestCLI:
         captured = capsys.readouterr()
         assert f"Updated task: {task_id}" in captured.out
 
+    def test_update_cli_with_extra(self, temp_data_file, monkeypatch, capsys):
+        """Test update command via CLI with extra field."""
+        task.add_task(title="To Update", description="", priority="low", assignee=None, tags="", extra=None)
+        data = task.load_data()
+        task_id = list(data["tasks"].keys())[0]
+
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "task.py",
+                "--data-file",
+                str(temp_data_file),
+                "update",
+                "--id",
+                task_id,
+                "--extra",
+                '{"new_field": "updated_value"}',
+            ],
+        )
+        task.main()
+        captured = capsys.readouterr()
+        assert f"Updated task: {task_id}" in captured.out
+
+        # Verify extra was updated
+        data = task.load_data()
+        assert data["tasks"][task_id]["extra"]["new_field"] == "updated_value"
+
     def test_assign_cli(self, temp_data_file, monkeypatch, capsys):
         """Test assign command via CLI."""
-        task.add_task(title="To Assign", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="To Assign", description="", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -575,7 +733,7 @@ class TestCLI:
 
     def test_complete_cli(self, temp_data_file, monkeypatch, capsys):
         """Test complete command via CLI."""
-        task.add_task(title="To Complete", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="To Complete", description="", priority="medium", assignee="agent-001", tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -599,7 +757,7 @@ class TestCLI:
 
     def test_show_cli(self, temp_data_file, monkeypatch, capsys):
         """Test show command via CLI."""
-        task.add_task(title="To Show", description="Show desc", priority="medium", assignee=None, tags="")
+        task.add_task(title="To Show", description="Show desc", priority="medium", assignee=None, tags="", extra=None)
         data = task.load_data()
         task_id = list(data["tasks"].keys())[0]
 
@@ -621,7 +779,7 @@ class TestCLI:
 
     def test_reset_cli(self, temp_data_file, monkeypatch, capsys):
         """Test reset command via CLI."""
-        task.add_task(title="To Reset", description="", priority="medium", assignee=None, tags="")
+        task.add_task(title="To Reset", description="", priority="medium", assignee=None, tags="", extra=None)
 
         monkeypatch.setattr(
             sys, "argv", ["task.py", "--data-file", str(temp_data_file), "reset"]
@@ -632,8 +790,8 @@ class TestCLI:
 
     def test_list_filter_status_cli(self, temp_data_file, monkeypatch, capsys):
         """Test list with status filter via CLI."""
-        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="")
-        task.add_task(title="Assigned Task", description="", priority="medium", assignee="agent-001", tags="")
+        task.add_task(title="Pending Task", description="", priority="medium", assignee=None, tags="", extra=None)
+        task.add_task(title="Assigned Task", description="", priority="medium", assignee="agent-001", tags="", extra=None)
         # Clear the captured output from add_task calls
         capsys.readouterr()
 
@@ -649,8 +807,8 @@ class TestCLI:
 
     def test_list_filter_assignee_cli(self, temp_data_file, monkeypatch, capsys):
         """Test list with assignee filter via CLI."""
-        task.add_task(title="Task A", description="", priority="medium", assignee="agent-001", tags="")
-        task.add_task(title="Task B", description="", priority="medium", assignee="agent-002", tags="")
+        task.add_task(title="Task A", description="", priority="medium", assignee="agent-001", tags="", extra=None)
+        task.add_task(title="Task B", description="", priority="medium", assignee="agent-002", tags="", extra=None)
         # Clear the captured output from add_task calls
         capsys.readouterr()
 
