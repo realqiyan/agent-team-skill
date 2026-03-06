@@ -100,7 +100,8 @@ python3 scripts/task.py add \
   --description "Create REST API for user management" \
   --priority high \
   --assignee "agent-001" \
-  --tags "backend,api,urgent"
+  --tags "backend,api,urgent" \
+  --extra '{"deadline": "2026-03-10", "estimate_hours": 8}'
 ```
 
 Parameters:
@@ -109,6 +110,7 @@ Parameters:
 - `--priority`: Task priority - low/medium/high/urgent (optional, default: medium)
 - `--assignee`: Assign to agent by agent_id (optional)
 - `--tags`: Tags (comma separated, optional)
+- `--extra`: Custom metadata as JSON string (optional, default: {})
 
 ### List Tasks
 
@@ -157,6 +159,7 @@ Parameters:
 - `--title`: Update title
 - `--description`: Update description
 - `--tags`: Update tags (comma separated)
+- `--extra`: Update custom metadata as JSON string
 
 ### Assign Task
 
@@ -195,6 +198,24 @@ Clear all task data and reset to empty state:
 ```bash
 python3 scripts/task.py reset
 ```
+
+### Extensible Extra Field
+
+Tasks support an `extra` field for storing custom metadata. This allows you to attach any additional information to a task:
+
+```bash
+# Add task with custom metadata
+python3 scripts/task.py add \
+  --title "Implement login" \
+  --extra '{"deadline": "2026-03-10", "estimate_hours": 8, "related_docs": ["doc-001"]}'
+
+# Update the extra field
+python3 scripts/task.py update \
+  --id task-abc123 \
+  --extra '{"deadline": "2026-03-12", "progress": 60}'
+```
+
+The `extra` field accepts any valid JSON object and is displayed in `show` and `list` outputs.
 
 ## Task Data Storage
 
