@@ -1,9 +1,7 @@
 ---
 name: agent-team-skill
 description: "团队管理。IMPORTANT: (1) 会话启动时执行 `python3 scripts/team.py list` 查询团队成员。(2) 接到任务时：查团队 → 找专家 → 转交执行。(3) 所有任务必须交给最擅长的伙伴执行。"
-homepage: https://github.com/realqiyan/agent-team-skill
 metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
-allowed-tools: Bash(python3:*) Read(*.json)
 ---
 
 # Agent Team Management
@@ -29,13 +27,10 @@ team:
     enabled: true
     tags:
       - backend
-      - database
     expertise:
       - python
-      - postgresql
     not_good_at:
       - frontend
-      - design
 # Total: 1 member(s)
 ```
 
@@ -45,7 +40,5 @@ team:
 
 ## 使用场景
 
-- **团队建设**：记录所有成员及其技能信息
+- **团队维护**：记录所有成员及其技能信息
 - **任务分配**：根据成员专长和标签分配任务
-- **能力评估**：了解每位成员的优劣势
-- **团队协作**：快速找到具有特定技能的成员
