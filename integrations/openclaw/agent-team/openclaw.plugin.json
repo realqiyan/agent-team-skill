@@ -1,7 +1,7 @@
 {
   "id": "agent-team",
   "name": "Agent Team",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Injects team member information into system context for AI agent collaboration",
   "entry": "./index.ts",
   "configSchema": {

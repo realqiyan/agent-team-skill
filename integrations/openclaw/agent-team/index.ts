@@ -84,28 +84,50 @@ function formatTeamContext(teamData: TeamData): string {
 
   const lines: string[] = [
     "",
-    "## Agent团队成员 (Team Members)",
+    "<agent_team>",
+    "## Agent Team Members",
     "",
-    "以下是当前可用的团队成员。接到任务时，应根据成员擅长方向分配任务：",
+    "The following are the current available team members. When assigning tasks, please consider the member's expertise direction:",
     "",
   ];
 
   for (const member of members) {
-    lines.push(`### ${member.name} (${member.agent_id})`);
-    lines.push(`- **角色**: ${member.role}`);
+    lines.push(`### ${member.name} (agent_id:${member.agent_id})`);
+    lines.push(`- **role**: ${member.role}`);
     if (member.tags.length > 0) {
-      lines.push(`- **标签**: ${member.tags.join(", ")}`);
+      lines.push(`- **tags**: ${member.tags.join(", ")}`);
     }
     if (member.expertise.length > 0) {
-      lines.push(`- **擅长**: ${member.expertise.join(", ")}`);
+      lines.push(`- **expertise**:`);
+      for (const exp of member.expertise) {
+        lines.push(`  - ${exp}`);
+      }
     }
     if (member.not_good_at.length > 0) {
-      lines.push(`- **不擅长**: ${member.not_good_at.join(", ")}`);
+      lines.push(`- **not_good_at**:`);
+      for (const ng of member.not_good_at) {
+        lines.push(`  - ${ng}`);
+      }
     }
     lines.push("");
   }
 
-  lines.push("> IMPORTANT: (1) 接到任务时：查团队 → 找专家 → 转交执行。(2) 所有任务必须交给最擅长的伙伴执行。(3) 使用 Agent 工具转交任务。");
+  lines.push("> IMPORTANT: (1) When assigning tasks, please check the team members' expertise direction first. (2) All tasks must be assigned to the most suitable partner. (3) Use the tool to hand off tasks.");
+  lines.push("");
+  lines.push("## Agent Coordination");
+  lines.push("");
+  lines.push("### Delegation Rules");
+  lines.push("- Use explore agent for open-ended codebase questions");
+  lines.push("- Spawn sub-agents for long-running tasks");
+  lines.push("- Use sessions_send for cross-session communication");
+  lines.push("");
+  lines.push("### Session Handoff");
+  lines.push("When delegating to another session:");
+  lines.push("1. Provide full context in the handoff message");
+  lines.push("2. Include relevant file paths");
+  lines.push("3. Specify expected output format");
+  lines.push("");
+  lines.push("</agent_team>");
 
   return lines.join("\n");
 }

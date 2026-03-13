@@ -1,6 +1,6 @@
 {
   "name": "agent-team",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OpenClaw plugin for injecting team member information into system context",
   "main": "index.ts",
   "types": "index.ts",
