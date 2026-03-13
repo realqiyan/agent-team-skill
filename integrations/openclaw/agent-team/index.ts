@@ -148,6 +148,15 @@ function formatTeamContext(teamData: TeamData): string {
   lines.push("");
   lines.push("**When receiving a task, first thing: Determine whose responsibility it is, delegate immediately!**");
   lines.push("");
+  lines.push("### 🔄 Leader Priority Delegation Principle");
+  lines.push("");
+  lines.push("**When Leader receives a task, if ANY team member has even slight relevance, MUST delegate first!**");
+  lines.push("");
+  lines.push("Leader only handles tasks personally when:");
+  lines.push("1. Team member failed to handle it");
+  lines.push("2. Team member explicitly cannot handle it");
+  lines.push("3. No relevant team member can be found");
+  lines.push("");
   lines.push("### Agent Coordination");
   lines.push("");
   lines.push("### Delegation Rules");
