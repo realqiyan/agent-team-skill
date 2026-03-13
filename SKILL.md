@@ -11,7 +11,7 @@ metadata:
         - python3
 ---
 
-# Agent Team Management
+# Agent Team Skill
 
 管理 Agent 团队成员信息，包括技能、角色和工作分配。
 
