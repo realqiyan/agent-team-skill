@@ -84,9 +84,9 @@ function formatTeamContext(teamData: TeamData): string {
 
   const lines: string[] = [
     "",
-    "## 团队成员 (Team Members)",
+    "## Agent团队成员 (Team Members)",
     "",
-    "以下是当前可用的团队成员。接到任务时，应根据成员专长分配任务：",
+    "以下是当前可用的团队成员。接到任务时，应根据成员擅长方向分配任务：",
     "",
   ];
 
@@ -105,7 +105,7 @@ function formatTeamContext(teamData: TeamData): string {
     lines.push("");
   }
 
-  lines.push("> 提示：任务应交给最擅长的成员执行。使用 Agent 工具转交任务。");
+  lines.push("> IMPORTANT: (1) 接到任务时：查团队 → 找专家 → 转交执行。(2) 所有任务必须交给最擅长的伙伴执行。(3) 使用 Agent 工具转交任务。");
 
   return lines.join("\n");
 }
