@@ -52,27 +52,27 @@ Leader 只在以下情况亲自处理：
 
 ## 查询团队成员
 
-列出所有团队成员信息（YAML 格式）：
+列出所有团队成员信息：
 
 ```bash
 python3 scripts/team.py list
 ```
 
 输出示例：
-```yaml
-team:
-  - agent_id: agent-001
-    name: Alice
-    role: Backend Developer
-    is_leader: true
-    enabled: true
-    tags:
-      - backend
-    expertise:
-      - python
-    not_good_at:
-      - frontend
-# Total: 1 member(s)
+```markdown
+## Team Members
+
+**Alice** ⭐ Leader - 协调,统筹,决策
+- agent_id: alice
+- expertise: 任务拆解,综合决策,agent协调
+- not_good_at: 代码开发,投资分析
+
+**Bob** - Backend Developer - 后端,API,数据库
+- agent_id: bob
+- expertise: Python,Go,PostgreSQL
+- not_good_at: 前端,设计
+
+# Total: 2 member(s), Leader: Alice (alice)
 ```
 
 ## 添加/更新成员

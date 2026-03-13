@@ -62,7 +62,7 @@ def reset_data() -> None:
 
 
 def list_members() -> None:
-    """List all team members in YAML format."""
+    """List all team members in compact format."""
     data = load_data()
     team = data.get("team", {})
 
@@ -70,30 +70,41 @@ def list_members() -> None:
         print("No team members found.")
         return
 
-    print("team:")
+    print("## Team Members")
+    print()
+
     for member_id, member in team.items():
-        print(f"  - agent_id: {member.get('agent_id', '')}")
-        print(f"    name: {member.get('name', '')}")
-        print(f"    role: {member.get('role', '')}")
-        print(f"    is_leader: {str(member.get('is_leader', False)).lower()}")
-        print(f"    enabled: {str(member.get('enabled', '')).lower()}")
-
+        name = member.get("name", "")
+        role = member.get("role", "")
+        is_leader = member.get("is_leader", False)
         tags = member.get("tags", [])
-        print("    tags:")
-        for tag in tags:
-            print(f"      - {tag}")
-
         expertise = member.get("expertise", [])
-        print("    expertise:")
-        for exp in expertise:
-            print(f"      - {exp}")
-
         not_good_at = member.get("not_good_at", [])
-        print("    not_good_at:")
-        for item in not_good_at:
-            print(f"      - {item}")
 
-    print(f"# Total: {len(team)} member(s)")
+        # First line: name, role, tags
+        tags_str = ",".join(tags)
+        if is_leader:
+            print(f"**{name}** ⭐ {role} - {tags_str}")
+        else:
+            print(f"**{name}** - {role} - {tags_str}")
+
+        # agent_id line
+        print(f"- agent_id: {member_id}")
+
+        # expertise line
+        if expertise:
+            print(f"- expertise: {','.join(expertise)}")
+
+        # not_good_at line
+        if not_good_at:
+            print(f"- not_good_at: {','.join(not_good_at)}")
+
+        print()
+
+    # Find leader for summary
+    leader = next((m for m in team.values() if m.get("is_leader")), None)
+    leader_info = f", Leader: {leader.get('name')} ({leader.get('agent_id')})" if leader else ""
+    print(f"# Total: {len(team)} member(s){leader_info}")
 
 
 def update_member(

@@ -89,31 +89,38 @@ function formatTeamContext(teamData: TeamData): string {
   const lines: string[] = [
     "",
     "<agent_team>",
-    "## Agent Team Members",
-    "",
-    "The following are the current available team members. When assigning tasks, please consider the member's expertise direction:",
+    "## Team Members",
     "",
   ];
 
   for (const member of members) {
-    const leaderBadge = member.is_leader ? " [Leader]" : "";
-    lines.push(`### ${member.name}${leaderBadge} (agent_id:${member.agent_id})`);
-    lines.push(`- **role**: ${member.role}`);
-    if (member.tags.length > 0) {
-      lines.push(`- **tags**: ${member.tags.join(", ")}`);
+    const name = member.name;
+    const role = member.role;
+    const isLeader = member.is_leader;
+    const tagsStr = member.tags.join(",");
+    const expertiseStr = member.expertise.join(",");
+    const notGoodAtStr = member.not_good_at.join(",");
+
+    // First line: name, role, tags
+    if (isLeader) {
+      lines.push(`**${name}** ⭐ ${role} - ${tagsStr}`);
+    } else {
+      lines.push(`**${name}** - ${role} - ${tagsStr}`);
     }
-    if (member.expertise.length > 0) {
-      lines.push(`- **expertise**:`);
-      for (const exp of member.expertise) {
-        lines.push(`  - ${exp}`);
-      }
+
+    // agent_id line
+    lines.push(`- agent_id: ${member.agent_id}`);
+
+    // expertise line
+    if (expertiseStr) {
+      lines.push(`- expertise: ${expertiseStr}`);
     }
-    if (member.not_good_at.length > 0) {
-      lines.push(`- **not_good_at**:`);
-      for (const ng of member.not_good_at) {
-        lines.push(`  - ${ng}`);
-      }
+
+    // not_good_at line
+    if (notGoodAtStr) {
+      lines.push(`- not_good_at: ${notGoodAtStr}`);
     }
+
     lines.push("");
   }
 
@@ -156,19 +163,6 @@ function formatTeamContext(teamData: TeamData): string {
   lines.push("1. Team member failed to handle it");
   lines.push("2. Team member explicitly cannot handle it");
   lines.push("3. No relevant team member can be found");
-  lines.push("");
-  lines.push("### Agent Coordination");
-  lines.push("");
-  lines.push("### Delegation Rules");
-  lines.push("- Use explore agent for open-ended codebase questions");
-  lines.push("- Spawn sub-agents for long-running tasks");
-  lines.push("- Use sessions_send for cross-session communication");
-  lines.push("");
-  lines.push("### Session Handoff");
-  lines.push("When delegating to another session:");
-  lines.push("1. Provide full context in the handoff message");
-  lines.push("2. Include relevant file paths");
-  lines.push("3. Specify expected output format");
   lines.push("");
   lines.push("</agent_team>");
 
