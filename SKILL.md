@@ -1,7 +1,14 @@
 ---
 name: agent-team-skill
-description: "Agent团队管理，支持查询和管理团队成员，全局共享。IMPORTANT: (1) 接到任务时：查团队 → 找专家 → 转交执行。(2) 所有任务必须交给最擅长的伙伴执行。"
-metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
+description: "Manage AI agent team members with skills, roles, and task delegation. Use when team coordination is needed, delegating tasks to experts, or managing team member information. Keywords: team, agent, delegation, expertise, leader, collaboration."
+license: MIT
+compatibility: Requires Python 3.10+
+metadata:
+  clawdbot:
+    emoji: "🤖"
+    requires:
+      bins:
+        - python3
 ---
 
 # Agent Team Management
