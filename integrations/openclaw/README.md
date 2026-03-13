@@ -27,7 +27,7 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 {
   "plugins": {
     "load": {
-      "paths": ["/path/to/agent-team-skill/openclaw-plugin"]
+      "paths": ["/path/to/agent-team-skill/integrations/openclaw"]
     },
     "entries": {
       "agent-team": {
@@ -40,7 +40,7 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 
 ### 方法三：作为 workspace 扩展
 
-将 `openclaw-plugin` 目录复制到项目的 `.openclaw/extensions/` 目录下，并在配置中启用：
+将 `integrations/openclaw` 目录复制到项目的 `.openclaw/extensions/` 目录下，并在配置中启用：
 
 ```json
 {
@@ -106,7 +106,7 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 ## 与 Skill 版本的关系
 
 - **Skill 版本** (`scripts/team.py`)：提供团队成员管理功能（添加、更新、重置）
-- **Plugin 版本** (`openclaw-plugin/`)：提供自动注入团队信息到系统提示词的功能
+- **Plugin 版本** (`integrations/openclaw/`)：提供自动注入团队信息到系统提示词的功能
 
 两者可以配合使用：使用 Skill 的 CLI 命令管理团队数据，Plugin 自动将数据注入到 AI 上下文。
 
