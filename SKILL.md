@@ -8,6 +8,32 @@ metadata: {"clawdbot":{"emoji":"🤖","requires":{"bins":["python3"]}}}
 
 管理 Agent 团队成员信息，包括技能、角色和工作分配。
 
+## 🤝 团队协作规则（最高优先级 - 违反 = 严重错误）
+
+### 🎯 Leader 职责
+
+**上传下达是基本要求，但要为结果负责：**
+
+1. **禁止无脑透传**
+   - 收到任务 → 判断职责 → 转交正确的人
+   - 转交前明确需求，转交后检查产出
+
+2. **批判思维**
+   - 对问题和结果提出挑战
+   - 不符合需求 → 要求改进，不能直接传递
+
+3. **推进改进**
+   - 识别问题和风险
+   - 主动发现问题并解决
+
+4. **为结果负责**
+   - 伙伴的产出 = 我的责任
+   - 质量不达标 → 反馈改进，直到达标
+
+### ⚡ 任务转交规则（刻入灵魂）
+
+**收到任务时，第一件事：判断属于谁的职责，立即转交！**
+
 ## 查询团队成员
 
 列出所有团队成员信息（YAML 格式）：
@@ -22,6 +48,7 @@ team:
   - agent_id: agent-001
     name: Alice
     role: Backend Developer
+    is_leader: true
     enabled: true
     tags:
       - backend
@@ -41,7 +68,8 @@ python3 scripts/team.py update \
   --agent-id "agent-001" \
   --name "Alice" \
   --role "Backend Developer" \
-  --enabled true \
+  --is-leader "true" \
+  --enabled "true" \
   --tags "backend,api,database" \
   --expertise "python,go,postgresql" \
   --not-good-at "frontend,design"
@@ -51,6 +79,7 @@ python3 scripts/team.py update \
 - `--agent-id`: 成员唯一标识符 (必需)
 - `--name`: 成员名称 (必需)
 - `--role`: 角色/职位 (必需)
+- `--is-leader`: 是否为团队 Leader (必需，true/false，一个团队只能有一个 Leader)
 - `--enabled`: 启用状态 true/false (必需)
 - `--tags`: 标签，逗号分隔 (必需)
 - `--expertise`: 专长技能，逗号分隔 (必需)

@@ -14,6 +14,7 @@ interface TeamMember {
   agent_id: string;
   name: string;
   role: string;
+  is_leader: boolean;
   enabled: boolean;
   tags: string[];
   expertise: string[];
@@ -82,6 +83,9 @@ function formatTeamContext(teamData: TeamData): string {
     return "";
   }
 
+  // Find leader
+  const leader = members.find((m) => m.is_leader);
+
   const lines: string[] = [
     "",
     "<agent_team>",
@@ -92,7 +96,8 @@ function formatTeamContext(teamData: TeamData): string {
   ];
 
   for (const member of members) {
-    lines.push(`### ${member.name} (agent_id:${member.agent_id})`);
+    const leaderBadge = member.is_leader ? " [Leader]" : "";
+    lines.push(`### ${member.name}${leaderBadge} (agent_id:${member.agent_id})`);
     lines.push(`- **role**: ${member.role}`);
     if (member.tags.length > 0) {
       lines.push(`- **tags**: ${member.tags.join(", ")}`);
@@ -112,9 +117,38 @@ function formatTeamContext(teamData: TeamData): string {
     lines.push("");
   }
 
-  lines.push("> IMPORTANT: (1) When assigning tasks, please check the team members' expertise direction first. (2) All tasks must be assigned to the most suitable partner. (3) Use the tool to hand off tasks.");
+  // Add team collaboration rules
+  lines.push("## 🤝 Team Collaboration Rules (Highest Priority - Violation = Critical Error)");
   lines.push("");
-  lines.push("## Agent Coordination");
+  lines.push("### 🎯 Leader Responsibilities");
+  lines.push("");
+  if (leader) {
+    lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
+    lines.push("");
+  }
+  lines.push("**Communication is basic, but you are responsible for results:**");
+  lines.push("");
+  lines.push("1. **No blind forwarding**");
+  lines.push("   - Receive task → Assess responsibility → Delegate to the right person");
+  lines.push("   - Clarify requirements before delegating, check output after");
+  lines.push("");
+  lines.push("2. **Critical thinking**");
+  lines.push("   - Challenge problems and results");
+  lines.push("   - If it doesn't meet requirements → Request improvements, don't just pass it along");
+  lines.push("");
+  lines.push("3. **Drive improvements**");
+  lines.push("   - Identify problems and risks");
+  lines.push("   - Proactively discover and solve issues");
+  lines.push("");
+  lines.push("4. **Take responsibility for results**");
+  lines.push("   - Team member's output = Your responsibility");
+  lines.push("   - Quality not up to standard → Provide feedback and iterate until it is");
+  lines.push("");
+  lines.push("### ⚡ Task Delegation Rules (Core Principle)");
+  lines.push("");
+  lines.push("**When receiving a task, first thing: Determine whose responsibility it is, delegate immediately!**");
+  lines.push("");
+  lines.push("### Agent Coordination");
   lines.push("");
   lines.push("### Delegation Rules");
   lines.push("- Use explore agent for open-ended codebase questions");
