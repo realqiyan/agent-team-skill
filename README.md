@@ -2,13 +2,21 @@
 
 Agent 团队管理工具，用于管理团队成员信息，包括技能、角色和工作分配。
 
+提供两种使用方式：
+
+- **Skill 版本** (`scripts/team.py`) - 通过 ClawHub/ClawDBot 使用，需要 AI Agent 主动调用
+- **Plugin 版本** (`openclaw-plugin/`) - OpenClaw 原生插件，自动注入团队信息到系统提示词
+
 ## 功能特性
 
 - 👥 **成员管理** - 管理团队成员信息，包括技能、角色和工作分配
 - 🔍 **智能路由** - 根据成员专长匹配任务
 - 📊 **能力评估** - 了解每个成员的优势和弱点
+- ⚡ **自动注入** - 插件版本可在会话启动时自动加载团队信息
 
 ## 安装方法
+
+### Skill 版本 (ClawHub/ClawDBot)
 
 ```bash
 # 通过 ClawHub 安装
@@ -22,9 +30,45 @@ cd agent-team-skill
 python3 --version
 ```
 
+### Plugin 版本 (OpenClaw)
+
+插件版本可在 OpenClaw 启动时自动注入团队信息到系统提示词，无需 AI Agent 主动调用工具。
+
+```bash
+# 方法一：链接到全局扩展目录
+ln -s $(pwd)/openclaw-plugin ~/.openclaw/extensions/agent-team
+
+# 方法二：在配置中指定路径
+# 编辑 ~/.openclaw/config.json
+```
+
+配置示例：
+```json
+{
+  "plugins": {
+    "load": {
+      "paths": ["/path/to/agent-team-skill/openclaw-plugin"]
+    },
+    "entries": {
+      "agent-team": {
+        "enabled": true
+      }
+    }
+  }
+}
+```
+
+详细配置请参考 [openclaw-plugin/README.md](./openclaw-plugin/README.md)。
+
 ## 使用方法
 
-### 会话启动初始化
+### Plugin 版本（推荐）
+
+安装插件后，团队信息会在会话启动时自动注入到系统提示词，AI Agent 无需执行任何命令即可获得团队上下文。
+
+### Skill 版本
+
+#### 会话启动初始化
 
 在会话启动时，需要执行以下命令查询团队成员：
 
