@@ -56,11 +56,19 @@ python3 scripts/team.py update \
 - `--expertise`: 专长技能，逗号分隔 (必需)
 - `--not-good-at`: 弱项领域，逗号分隔 (必需)
 
+## 重置数据
+
+清空所有团队数据，重置为初始状态：
+
+```bash
+python3 scripts/team.py reset
+```
+
+⚠️ 此操作会清空 `~/.agent-team/team.json` 中的所有数据。
+
 ## 数据存储
 
-团队数据存储于 `~/.agent-team/team.json`，目录不存在时自动创建。
-
-> ⚠️ **重置数据**：如需清空所有团队数据，请查看 [GUIDE.md](./GUIDE.md)。
+团队数据存储于 `~/.agent-team/team.json`，全局共享，目录不存在时自动创建。
 
 ## 使用场景
 
