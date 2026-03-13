@@ -86,45 +86,32 @@ python3 scripts/team.py <command> [options]
 
 ### 列出成员
 
-列出所有团队成员（YAML 格式）：
+列出所有团队成员：
 
 ```bash
 python3 scripts/team.py list
 ```
 
 输出示例：
-```yaml
-team:
-  - agent_id: alice
-    name: Alice
-    role: Backend Developer
-    is_leader: true
-    enabled: true
-    tags:
-      - backend
-      - api
-      - database
-    expertise:
-      - python
-      - go
-      - postgresql
-    not_good_at:
-      - frontend
-      - design
-  - agent_id: bob
-    name: Bob
-    role: Designer
-    is_leader: false
-    enabled: true
-    tags:
-      - ui
-      - ux
-    expertise:
-      - figma
-      - css
-    not_good_at:
-      - backend
-# Total: 2 member(s)
+```markdown
+## Team Members
+
+**Alice** ⭐ Leader - 协调,统筹,决策
+- agent_id: alice
+- expertise: 任务拆解,综合决策,agent协调
+- not_good_at: 代码开发,投资分析
+
+**Bob** - Backend Developer - 后端,API,数据库
+- agent_id: bob
+- expertise: Python,Go,PostgreSQL
+- not_good_at: 前端,设计
+
+**Carol** - Designer - UI,UX,设计
+- agent_id: carol
+- expertise: Figma,CSS,用户界面设计
+- not_good_at: 后端开发
+
+# Total: 3 member(s), Leader: Alice (alice)
 ```
 
 ### 添加/更新成员
