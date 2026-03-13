@@ -2,14 +2,10 @@
   "name": "agent-team-plugin",
   "version": "1.0.0",
   "description": "OpenClaw plugin for injecting team member information into system context",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build"
-  },
+  "main": "index.ts",
+  "types": "index.ts",
   "files": [
-    "dist",
+    "index.ts",
     "openclaw.plugin.json"
   ],
   "keywords": [
@@ -18,9 +14,5 @@
     "team",
     "agent"
   ],
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
-  }
+  "license": "MIT"
 }
