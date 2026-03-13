@@ -3,7 +3,7 @@
   "name": "Agent Team",
   "version": "1.0.0",
   "description": "Injects team member information into system context for AI agent collaboration",
-  "entry": "./index.ts",
+  "entry": "./dist/index.js",
   "configSchema": {
     "type": "object",
     "properties": {
