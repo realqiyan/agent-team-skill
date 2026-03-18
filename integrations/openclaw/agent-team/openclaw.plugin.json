@@ -2,7 +2,7 @@
   "id": "agent-team",
   "name": "Agent Team",
   "version": "1.0.1",
-  "description": "Injects team member information into system context for AI agent collaboration",
+  "description": "Team collaboration and task processing flow with delegation, progress tracking, and multi-agent coordination",
   "entry": "./index.ts",
   "configSchema": {
     "type": "object",
