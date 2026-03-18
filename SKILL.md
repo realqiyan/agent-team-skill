@@ -37,79 +37,71 @@ Manage AI agent team members with skills, roles, and task delegation.
    - Team member's output = Your responsibility
    - Quality not up to standard → Provide feedback and iterate until it is
 
-## 🔄 Task Execution Flow (Six Phases)
+## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)
 
-**SEARCH → RECORD → ORIENT → DISPATCH → REVIEW → UPDATE**
+**SEARCH → RECORD → ORIENT → PLAN → DISPATCH → REVIEW → UPDATE**
 
 **IMPORTANT: All tasks must follow this flow without exception.**
 
 ### 1. SEARCH — Context Search
-- Search memory/ directory for historical records
-- Understand task background and relevant context
+- Do NOT reply immediately
+- Use `grep`/`rg` to search `memory/` for historical context first
 
 ### 2. RECORD — Progress Logging
-- Create/update memory/YYYY-MM-DD.md
-- Log task start status
+- Record to `memory/YYYY-MM-DD.md`:
+  ```markdown
+  ## In Progress
+  ### [Task Name] (HH:MM start)
+  - Progress: xxx
+  ```
+- Upon completion, update to:
+  ```markdown
+  ### [Task Name] (HH:MM start) ✅
+  - End time: HH:MM | Result: xxx
+  ```
 
-### 3. ORIENT — Orientation Phase (Core Leader Responsibility)
+### 3. ORIENT — Orientation Phase
 - **Understand Requirements**: What does the user really want?
 - **Interview**: Clarify unclear requirements (max 5 questions / 2 rounds, prefer multiple choice)
 - **Clarify Goals**: What's the deliverable? Success criteria?
 - **Identify Risks**: What could go wrong?
 - **Determine Responsibility**: Who's best suited to execute?
 
-### 4. DISPATCH — Delegate/Execute
-- **Belongs to team member** → Delegate with full context
+### 4. PLAN — Create Execution Plan
+- Create `work/task-name-plan.md`:
+  ```markdown
+  # [Task Name] Plan
+  Created: YYYY-MM-DD HH:MM
+
+  ## Goal
+  [One-line description of deliverable]
+
+  ## Steps
+  - [ ] Step 1: xxx
+  - [ ] Step 2: xxx
+
+  ## Current Progress
+  Executing: Step 1
+  ```
+- After each step: Check off `[x]` and update "Current Progress"
+- When context fills up: Ensure plan file is updated before compression
+
+### 5. DISPATCH — Delegate/Execute
+- Determine task ownership (self or team member)
+- **Belongs to team member** → Delegate with full context (SEARCH history + original requirements)
 - **Belongs to self** → Execute directly
+- After each Phase: Create checkpoint:
+  ```bash
+  git add -A && git commit -m "checkpoint: [Task Name] Phase X complete"
+  ```
 
-### 5. REVIEW — Check Task Results
+### 6. REVIEW — Check Task Results
 - Review completed work against requirements
-- If task incomplete → Loop back to node 1 (SEARCH)
+- If task incomplete → Loop back to SEARCH
 
-### 6. UPDATE — Update Progress Status
-- Update task status in memory/YYYY-MM-DD.md
-- Mark as completed or note remaining work
-
-## 📝 Templates
-
-**Progress Log Template** (memory/YYYY-MM-DD.md):
-```markdown
-## [Task Name] (HH:MM)
-- Executor: [Name/Team Member]
-- Goal: [One-line description]
-- Status: In Progress / Completed
-- Result: [Fill when complete]
-```
-
-**Plan File Template** (work/task-name-plan.md):
-```markdown
-# [Task Name] Plan
-
-## Goal
-[What we want to achieve]
-
-## Success Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-
-## Risks
-- [Risk 1]: [Mitigation]
-- [Risk 2]: [Mitigation]
-
-## Execution
-
-### Phase 1: [Phase Name]
-- [ ] [Step 1]
-- [ ] [Step 2]
-
-### Phase 2: [Phase Name]
-- [ ] [Step 1]
-- [ ] [Step 2]
-
-## Checkpoints
-- [ ] Phase 1 complete: [commit hash]
-- [ ] Phase 2 complete: [commit hash]
-```
+### 7. UPDATE — Update Progress Status
+- Delete plan file or move to `archive/`
+- Update final status in `memory/YYYY-MM-DD.md`
 
 ### ⚡ Task Delegation Rules (Core Principle)
 
