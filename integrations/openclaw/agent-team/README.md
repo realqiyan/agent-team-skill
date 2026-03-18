@@ -1,27 +1,38 @@
 # Agent Team Plugin
 
-OpenClaw 插件，用于在 AI Agent 会话启动时自动注入团队成员信息到系统提示词。
+OpenClaw plugin that automatically injects team member information and collaboration rules into system context at session start.
 
-## 为什么需要插件版本？
+## Why Use the Plugin?
 
-相比 Skill 版本，插件版本有以下优势：
+The plugin provides these advantages over manually calling the skill:
 
-1. **100% 可靠加载**：插件通过 `before_prompt_build` 钩子在会话启动前注入团队信息，不依赖 AI Agent 主动调用工具
-2. **零启动延迟**：无需引导 AI Agent 执行 `python3 scripts/team.py list`，团队信息直接注入系统提示词
-3. **简化交互**：AI Agent 直接获得团队上下文，无需额外步骤
+1. **100% Reliable Loading**: Uses `before_prompt_build` hook to inject team information before session starts, no dependency on AI agent主动 calling tools
+2. **Zero Startup Delay**: Team information is directly injected into system context without needing to guide AI to execute `python3 scripts/team.py list`
+3. **Simplified Interaction**: AI agent gets team context directly, no extra steps needed
 
-## 安装
+## What Gets Injected
 
-### 方法一：链接到全局扩展目录（推荐）
+The plugin injects:
+
+- **Team Members**: Names, roles, expertise, and weaknesses
+- **Leader Responsibilities**: No blind forwarding, critical thinking, drive improvements, take responsibility
+- **Task Execution Flow**: SEARCH → RECORD → ORIENT → DISPATCH → REVIEW → UPDATE
+- **Complex Task Rules**: Plan file workflow for tasks with >3 tool calls
+- **Templates**: Progress log and plan file templates
+- **Delegation Rules**: When and how to delegate tasks
+
+## Installation
+
+### Method 1: Link to Global Extensions Directory (Recommended)
 
 ```bash
-# 创建符号链接到 OpenClaw 全局扩展目录
+# Create symlink to OpenClaw global extensions directory
 ln -s $(pwd) ~/.openclaw/extensions/agent-team
 ```
 
-### 方法二：在 OpenClaw 配置中指定路径
+### Method 2: Specify Path in OpenClaw Config
 
-在 `~/.openclaw/config.json` 中添加：
+Add to `~/.openclaw/config.json`:
 
 ```json
 {
@@ -38,9 +49,9 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 }
 ```
 
-### 方法三：作为 workspace 扩展
+### Method 3: As Workspace Extension
 
-将 `integrations/openclaw/agent-team` 目录复制到项目的 `.openclaw/extensions/` 目录下，并在配置中启用：
+Copy `integrations/openclaw/agent-team` directory to project's `.openclaw/extensions/` directory and enable in config:
 
 ```json
 {
@@ -50,16 +61,16 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 }
 ```
 
-## 配置
+## Configuration
 
-插件支持以下配置项（通过 `plugins.entries.agent-team.config` 设置）：
+Plugin supports these configuration options (set via `plugins.entries.agent-team.config`):
 
-| 配置项 | 类型 | 默认值 | 说明 |
-|--------|------|--------|------|
-| `dataFile` | string | `~/.agent-team/team.json` | 团队数据文件路径 |
-| `enabled` | boolean | `true` | 是否启用插件 |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `dataFile` | string | `~/.agent-team/team.json` | Team data file path |
+| `enabled` | boolean | `true` | Enable or disable plugin |
 
-配置示例：
+Config example:
 
 ```json
 {
@@ -76,9 +87,9 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 }
 ```
 
-## 数据格式
+## Data Format
 
-团队数据存储在 JSON 文件中，格式如下：
+Team data is stored in JSON format:
 
 ```json
 {
@@ -87,6 +98,7 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
       "agent_id": "agent-001",
       "name": "Alice",
       "role": "Backend Developer",
+      "is_leader": true,
       "enabled": true,
       "tags": ["backend", "database"],
       "expertise": ["python", "postgresql"],
@@ -96,38 +108,39 @@ ln -s $(pwd) ~/.openclaw/extensions/agent-team
 }
 ```
 
-## 工作原理
+## How It Works
 
-1. 插件在 OpenClaw Gateway 启动时加载
-2. 每次构建 AI 提示词时，触发 `before_prompt_build` 事件
-3. 插件读取团队数据文件，格式化为 Markdown
-4. 通过 `appendSystemContext` 将团队信息追加到系统提示词末尾
+1. Plugin loads when OpenClaw Gateway starts
+2. Every time AI prompt is built, `before_prompt_build` event triggers
+3. Plugin reads team data file and formats as Markdown
+4. Team information is appended to system context via `appendSystemContext`
 
-## 与 Skill 版本的关系
+## Relationship with Skill
 
-- **Skill 版本** (`scripts/team.py`)：提供团队成员管理功能（添加、更新、重置）
-- **Plugin 版本** (`integrations/openclaw/agent-team/`)：提供自动注入团队信息到系统提示词的功能
+- **Skill** (`scripts/team.py`): Provides team member management (add, update, reset)
+- **Plugin** (`integrations/openclaw/agent-team/`): Automatically injects team info and collaboration rules
 
-两者可以配合使用：使用 Skill 的 CLI 命令管理团队数据，Plugin 自动将数据注入到 AI 上下文。
+They work together: use Skill CLI to manage team data, Plugin automatically injects data into AI context.
 
-## 管理团队数据
+## Managing Team Data
 
-继续使用原有的 Python 脚本管理团队成员：
+Use the Python script to manage team members:
 
 ```bash
-# 列出团队成员
+# List team members
 python3 scripts/team.py list
 
-# 添加/更新成员
+# Add/update member
 python3 scripts/team.py update \
   --agent-id "agent-001" \
   --name "Alice" \
   --role "Backend Developer" \
+  --is-leader true \
   --enabled true \
   --tags "backend,database" \
   --expertise "python,postgresql" \
   --not-good-at "frontend,design"
 
-# 重置数据
+# Reset data
 python3 scripts/team.py reset
 ```
