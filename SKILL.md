@@ -2,6 +2,8 @@
 name: agent-team-skill
 description: "Team collaboration and task processing flow with delegation, progress tracking, and multi-agent coordination. Use when team coordination, task delegation, or workflow management is needed."
 license: MIT
+homepage: https://github.com/realqiyan/agent-team-skill
+allowed-tools: Bash(python3:*) Read(*.json)
 compatibility: Requires Python 3.10+
 metadata:
   clawdbot:
