@@ -159,7 +159,7 @@ function formatTeamContext(teamData: TeamData): string {
   lines.push("");
   lines.push("### 1. SEARCH — Context Search");
   lines.push("- Do NOT reply immediately");
-  lines.push("- Use `grep`/`rg` to search `memory/` for historical context first");
+  lines.push("- Search historical memory for relevant context first");
   lines.push("");
   lines.push("### 2. RECORD — Progress Logging");
   lines.push("- Record to `memory/YYYY-MM-DD.md`:");

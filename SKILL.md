@@ -45,7 +45,7 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 ### 1. SEARCH — Context Search
 - Do NOT reply immediately
-- Use `grep`/`rg` to search `memory/` for historical context first
+- Search historical memory for relevant context first
 
 ### 2. RECORD — Progress Logging
 - Record to `memory/YYYY-MM-DD.md`:
