@@ -179,3 +179,7 @@ Team data is stored in `~/.agent-team/team.json`, shared globally. Directory is 
 
 - **Team Maintenance**: Record all members and their skill information
 - **Task Assignment**: Assign tasks based on member expertise and tags
+
+## References
+
+- [Plugin Installation Guide](references/plugin-installation.md) - How to install and configure the OpenClaw plugin
