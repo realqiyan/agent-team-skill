@@ -53,7 +53,7 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 - **Search Context**: Search historical memory first, do not respond immediately
 - **Understand Requirements**: What does the user really want?
-- **Clarify Questions**: Must clarify if unsure (max 5 questions / 2 rounds, prefer multiple choice)
+- **Clarify Questions**: Must clarify if unsure (ask clearly in one go when possible, max 3 rounds)
 - **Define Goals**: What's the deliverable? Success criteria?
 - **Identify Risks**: What could go wrong?
 - **Determine Ownership**: Who's best suited to execute? (self or teammate)

@@ -249,7 +249,7 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("");
   lines.push("- **Search Context**: Search historical memory first, do not respond immediately");
   lines.push("- **Understand Requirements**: What does the user really want?");
-  lines.push("- **Clarify Questions**: Must clarify if unsure (max 5 questions / 2 rounds, prefer multiple choice)");
+  lines.push("- **Clarify Questions**: Must clarify if unsure (ask clearly in one go when possible, max 3 rounds)");
   lines.push("- **Define Goals**: What's the deliverable? Success criteria?");
   lines.push("- **Identify Risks**: What could go wrong?");
   lines.push("- **Determine Ownership**: Who's best suited to execute? (self or teammate)");
