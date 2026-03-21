@@ -21,23 +21,15 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 ### 🎯 Leader Responsibilities
 
-**Communication is basic, but you are responsible for results:**
+**Actions only you can take:**
 
-1. **No blind forwarding**
-   - Receive task → Assess responsibility → Delegate to the right person
-   - Clarify requirements before delegating, check output after
+1. **Approve task completion**
+   - Before marking any task complete, verify output meets original requirements
+   - If incomplete → Send back for revision with specific feedback
 
-2. **Critical thinking**
-   - Challenge problems and results
-   - If it doesn't meet requirements → Request improvements, don't just pass it along
-
-3. **Drive improvements**
-   - Identify problems and risks
-   - Proactively discover and solve issues
-
-4. **Take responsibility for results**
-   - Team member's output = Your responsibility
-   - Quality not up to standard → Provide feedback and iterate until it is
+2. **Reassign when delegation fails**
+   - If teammate cannot complete task → Decide: reassign to another teammate OR execute yourself
+   - Non-leaders should escalate to you instead of reassigning
 
 ## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)
 

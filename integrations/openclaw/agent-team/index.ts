@@ -216,23 +216,15 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
       lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
       lines.push("");
     }
-    lines.push("**Communication is basic, but you are responsible for results:**");
+    lines.push("**Actions only you can take:**");
     lines.push("");
-    lines.push("1. **No blind forwarding**");
-    lines.push("   - Receive task → Assess responsibility → Delegate to the right person");
-    lines.push("   - Clarify requirements before delegating, check output after");
+    lines.push("1. **Approve task completion**");
+    lines.push("   - Before marking any task complete, verify output meets original requirements");
+    lines.push("   - If incomplete → Send back for revision with specific feedback");
     lines.push("");
-    lines.push("2. **Critical thinking**");
-    lines.push("   - Challenge problems and results");
-    lines.push("   - If it doesn't meet requirements → Request improvements, don't just pass it along");
-    lines.push("");
-    lines.push("3. **Drive improvements**");
-    lines.push("   - Identify problems and risks");
-    lines.push("   - Proactively discover and solve issues");
-    lines.push("");
-    lines.push("4. **Take responsibility for results**");
-    lines.push("   - Team member's output = Your responsibility");
-    lines.push("   - Quality not up to standard → Provide feedback and iterate until it is");
+    lines.push("2. **Reassign when delegation fails**");
+    lines.push("   - If teammate cannot complete task → Decide: reassign to another teammate OR execute yourself");
+    lines.push("   - Non-leaders should escalate to you instead of reassigning");
     lines.push("");
   }
   lines.push("## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)");
