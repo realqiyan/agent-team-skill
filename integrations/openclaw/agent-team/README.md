@@ -16,7 +16,7 @@ The plugin injects:
 
 - **Team Members**: Names, roles, expertise, and weaknesses
 - **Leader Responsibilities**: No blind forwarding, critical thinking, drive improvements, take responsibility
-- **Task Execution Flow**: SEARCH → RECORD → ORIENT → DISPATCH → REVIEW → UPDATE
+- **Task Execution Flow**: SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW
 - **Complex Task Rules**: Plan file workflow for tasks with >3 tool calls
 - **Templates**: Progress log and plan file templates
 - **Delegation Rules**: When and how to delegate tasks

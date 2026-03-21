@@ -9,7 +9,7 @@ An AI agent team collaboration tool consisting of two components:
 1. **Plugin** (`integrations/openclaw/agent-team/`) - OpenClaw native plugin that auto-injects team information and collaboration rules into system context
 2. **Skill** (`scripts/team.py`) - CLI tool for managing team member data (CRUD operations)
 
-The plugin must be installed for the skill to work properly. It injects the six-phase task execution flow: SEARCH → RECORD → ORIENT → DISPATCH → REVIEW → UPDATE.
+The plugin must be installed for the skill to work properly. It injects the six-phase task execution flow: SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW.
 
 ## Commands
 

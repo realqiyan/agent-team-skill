@@ -41,7 +41,7 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 ## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)
 
-**SEARCH → RECORD → ORIENT → PLAN → DISPATCH → REVIEW → UPDATE**
+**SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW**
 
 **IMPORTANT: All tasks must follow this flow without exception.**
 
@@ -69,26 +69,7 @@ Manage AI agent team members with skills, roles, and task delegation.
 - **Identify Risks**: What could go wrong?
 - **Determine Responsibility**: Who's best suited to execute?
 
-### 4. PLAN — Create Execution Plan
-- Create `work/task-name-plan.md`:
-  ```markdown
-  # [Task Name] Plan
-  Created: YYYY-MM-DD HH:MM
-
-  ## Goal
-  [One-line description of deliverable]
-
-  ## Steps
-  - [ ] Step 1: xxx
-  - [ ] Step 2: xxx
-
-  ## Current Progress
-  Executing: Step 1
-  ```
-- After each step: Check off `[x]` and update "Current Progress"
-- When context fills up: Ensure plan file is updated before compression
-
-### 5. DISPATCH — Delegate/Execute
+### 4. DISPATCH — Delegate/Execute
 - Determine task ownership (self or team member)
 - **Belongs to team member** → Delegate with full context (SEARCH history + original requirements)
 - **Belongs to self** → Execute directly
@@ -97,13 +78,14 @@ Manage AI agent team members with skills, roles, and task delegation.
   git add -A && git commit -m "checkpoint: [Task Name] Phase X complete"
   ```
 
+### 5. UPDATE — Update Progress Status
+- Update progress in `memory/YYYY-MM-DD.md`
+- Can be executed multiple times during task
+
 ### 6. REVIEW — Check Task Results
 - Review completed work against requirements
 - If task incomplete → Loop back to SEARCH
-
-### 7. UPDATE — Update Progress Status
-- Delete plan file or move to `archive/`
-- Update final status in `memory/YYYY-MM-DD.md`
+- If task complete → Task finished
 
 ### ⚡ Task Delegation Rules (Core Principle)
 

@@ -8,7 +8,7 @@ The Agent Team plugin automatically injects team member information and collabor
 
 - **Team awareness**: AI agents know all team members, their roles, and expertise
 - **Task delegation rules**: Built-in guidance for delegating tasks to appropriate team members
-- **Six-phase workflow**: SEARCH → RECORD → ORIENT → PLAN → DISPATCH → REVIEW → UPDATE
+- **Six-phase workflow**: SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW
 
 Without the plugin installed, the skill's CLI tool (`scripts/team.py`) can still manage team data, but the AI agent won't automatically receive team context.
 
