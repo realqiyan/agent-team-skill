@@ -103,6 +103,54 @@ function loadTeamData(dataFilePath: string): TeamData | null {
 }
 
 /**
+ * Format a single team member as markdown line
+ * @param member Team member to format
+ * @param options Formatting options
+ */
+function formatMember(member: TeamMember, options: { compact?: boolean } = {}): string[] {
+  const { compact = false } = options;
+  const tagsStr = compact ? member.tags.join(",") : member.tags.join(", ");
+  const expertiseStr = member.expertise.join(compact ? "," : ", ");
+  const notGoodAtStr = member.not_good_at.join(compact ? "," : ", ");
+
+  const lines: string[] = [];
+
+  if (member.is_leader) {
+    if (compact) {
+      lines.push(`**${member.name}** ⭐ ${member.role} - ${tagsStr}`);
+    } else {
+      lines.push(`**${member.name}** ⭐ ${member.role} (Leader)`);
+    }
+  } else {
+    if (compact) {
+      lines.push(`**${member.name}** - ${member.role} - ${tagsStr}`);
+    } else {
+      lines.push(`**${member.name}** - ${member.role}`);
+    }
+  }
+
+  if (compact) {
+    lines.push(`- agent_id: ${member.agent_id}`);
+  } else {
+    lines.push(`- agent_id: \`${member.agent_id}\``);
+  }
+
+  if (tagsStr && !compact) {
+    lines.push(`- tags: ${tagsStr}`);
+  }
+
+  if (expertiseStr) {
+    lines.push(`- expertise: ${expertiseStr}`);
+  }
+
+  if (notGoodAtStr) {
+    lines.push(`- not_good_at: ${notGoodAtStr}`);
+  }
+
+  return lines;
+}
+
+/**
  * Format team members as simple markdown for command output
  */
 function formatTeamMembers(teamData: TeamData): string {
@@ -112,7 +160,6 @@ function formatTeamMembers(teamData: TeamData): string {
     return "No team members configured.";
   }
 
-  // Find leader
   const leader = members.find((m) => m.is_leader);
 
   const lines: string[] = [
@@ -121,26 +168,7 @@ function formatTeamMembers(teamData: TeamData): string {
   ];
 
   for (const member of members) {
-    const isLeader = member.is_leader;
-    const tagsStr = member.tags.join(", ");
-    const expertiseStr = member.expertise.join(", ");
-    const notGoodAtStr = member.not_good_at.join(", ");
-
-    if (isLeader) {
-      lines.push(`**${member.name}** ⭐ ${member.role} (Leader)`);
-    } else {
-      lines.push(`**${member.name}** - ${member.role}`);
-    }
-    lines.push(`- agent_id: \`${member.agent_id}\``);
-    if (tagsStr) {
-      lines.push(`- tags: ${tagsStr}`);
-    }
-    if (expertiseStr) {
-      lines.push(`- expertise: ${expertiseStr}`);
-    }
-    if (notGoodAtStr) {
-      lines.push(`- not_good_at: ${notGoodAtStr}`);
-    }
+    lines.push(...formatMember(member));
     lines.push("");
   }
 
@@ -163,7 +191,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
     return "";
   }
 
-  // Find leader
   const leader = members.find((m) => m.is_leader);
   const isCurrentAgentLeader = leader?.agent_id === currentAgentId;
 
@@ -175,33 +202,7 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   ];
 
   for (const member of members) {
-    const name = member.name;
-    const role = member.role;
-    const isLeader = member.is_leader;
-    const tagsStr = member.tags.join(",");
-    const expertiseStr = member.expertise.join(",");
-    const notGoodAtStr = member.not_good_at.join(",");
-
-    // First line: name, role, tags
-    if (isLeader) {
-      lines.push(`**${name}** ⭐ ${role} - ${tagsStr}`);
-    } else {
-      lines.push(`**${name}** - ${role} - ${tagsStr}`);
-    }
-
-    // agent_id line
-    lines.push(`- agent_id: ${member.agent_id}`);
-
-    // expertise line
-    if (expertiseStr) {
-      lines.push(`- expertise: ${expertiseStr}`);
-    }
-
-    // not_good_at line
-    if (notGoodAtStr) {
-      lines.push(`- not_good_at: ${notGoodAtStr}`);
-    }
-
+    lines.push(...formatMember(member, { compact: true }));
     lines.push("");
   }
 
