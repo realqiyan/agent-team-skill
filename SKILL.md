@@ -45,8 +45,6 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 **IMPORTANT: This is a continuous improvement cycle. If task is incomplete in Act phase, loop back to Plan.**
 
----
-
 ### 1. Plan — Planning Phase
 
 **Goal: Prepare thoroughly, avoid blind execution**
@@ -58,8 +56,6 @@ Manage AI agent team members with skills, roles, and task delegation.
 - **Identify Risks**: What could go wrong?
 - **Determine Ownership**: Who's best suited to execute? (self or teammate)
 - **Create Plan**: Output specific execution plan
-
----
 
 ### 2. Do — Execution Phase
 
@@ -90,8 +86,6 @@ Manage AI agent team members with skills, roles, and task delegation.
   git add -A && git commit -m "checkpoint: [Task Name] sub-phase complete"
   ```
 
----
-
 ### 3. Check — Checking Phase
 
 **Goal: Verify results, ensure quality**
@@ -99,8 +93,6 @@ Manage AI agent team members with skills, roles, and task delegation.
 - Verify results against requirements
 - Check completeness and compliance with standards
 - Record issues and deviations
-
----
 
 ### 4. Act — Acting Phase
 
@@ -112,8 +104,6 @@ Manage AI agent team members with skills, roles, and task delegation.
 - **Decide Next Steps**:
   - ✅ Task complete → End
   - ❌ Task incomplete → Loop back to Plan
-
----
 
 ### ⚡ Task Delegation Rules (Core Principle)
 

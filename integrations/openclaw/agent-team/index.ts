@@ -241,8 +241,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("");
   lines.push("**IMPORTANT: This is a continuous improvement cycle. If task is incomplete in Act phase, loop back to Plan.**");
   lines.push("");
-  lines.push("---");
-  lines.push("");
   lines.push("### 1. Plan — Planning Phase");
   lines.push("");
   lines.push("**Goal: Prepare thoroughly, avoid blind execution**");
@@ -254,8 +252,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("- **Identify Risks**: What could go wrong?");
   lines.push("- **Determine Ownership**: Who's best suited to execute? (self or teammate)");
   lines.push("- **Create Plan**: Output specific execution plan");
-  lines.push("");
-  lines.push("---");
   lines.push("");
   lines.push("### 2. Do — Execution Phase");
   lines.push("");
@@ -286,8 +282,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("  git add -A && git commit -m \"checkpoint: [Task Name] sub-phase complete\"");
   lines.push("  ```");
   lines.push("");
-  lines.push("---");
-  lines.push("");
   lines.push("### 3. Check — Checking Phase");
   lines.push("");
   lines.push("**Goal: Verify results, ensure quality**");
@@ -295,8 +289,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("- Verify results against requirements");
   lines.push("- Check completeness and compliance with standards");
   lines.push("- Record issues and deviations");
-  lines.push("");
-  lines.push("---");
   lines.push("");
   lines.push("### 4. Act — Acting Phase");
   lines.push("");
@@ -308,8 +300,6 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("- **Decide Next Steps**:");
   lines.push("  - ✅ Task complete → End");
   lines.push("  - ❌ Task incomplete → Loop back to Plan");
-  lines.push("");
-  lines.push("---");
   lines.push("");
   lines.push("### ⚡ Task Delegation Rules (Core Principle)");
   lines.push("");
