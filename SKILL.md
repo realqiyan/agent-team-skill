@@ -174,4 +174,4 @@ Team data is stored in `~/.agent-team/team.json`, shared globally. Directory is 
 
 ## References
 
-- [Plugin Installation Guide](references/plugin-installation.md) - How to install and configure the OpenClaw plugin
+- [Plugin Installation Guide](https://github.com/realqiyan/agent-team-skill/blob/master/integrations/openclaw/agent-team/README.md) - How to install and configure the OpenClaw plugin

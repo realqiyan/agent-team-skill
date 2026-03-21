@@ -15,11 +15,10 @@ The plugin provides these advantages over manually calling the skill:
 The plugin injects:
 
 - **Team Members**: Names, roles, expertise, and weaknesses
-- **Leader Responsibilities**: No blind forwarding, critical thinking, drive improvements, take responsibility
-- **Task Execution Flow**: SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW
-- **Complex Task Rules**: Plan file workflow for tasks with >3 tool calls
-- **Templates**: Progress log and plan file templates
-- **Delegation Rules**: When and how to delegate tasks
+- **Leader Authority**: Approve task completion, reassign when delegation fails
+- **Task Processing Flow**: Plan → Do → Check → Act (PDCA cycle)
+- **Recording Rules**: Progress tracking in `memory/YYYY-MM-DD.md`
+- **Task Delegation Rules**: Timing and process for delegating tasks to teammates
 
 ## Installation
 
@@ -122,10 +121,10 @@ Team data is stored in JSON format:
 The plugin uses `PluginHookAgentContext.agentId` to determine which agent is running:
 
 - **If current agent is the leader** (matches `team[id].is_leader === true`):
-  - Injects full Team Members + Leader Responsibilities + Task Execution Rules
-  
+  - Injects full Team Members + Leader Authority + Task Processing Flow
+
 - **If current agent is NOT the leader**:
-  - Injects Team Members + Task Execution Rules (no Leader Responsibilities)
+  - Injects Team Members + Task Processing Flow (no Leader Authority)
 
 This ensures only the designated leader receives leadership-related prompts.
 
