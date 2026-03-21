@@ -206,11 +206,9 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
     lines.push("");
   }
 
-  // Add team collaboration rules - only show Leader Responsibilities if current agent is leader
+  // Add team collaboration rules - only show Leader Authority if current agent is leader
   if (isCurrentAgentLeader) {
-    lines.push("## 🤝 Team Collaboration Rules (Highest Priority - Violation = Critical Error)");
-    lines.push("");
-    lines.push("### 🎯 Leader Responsibilities");
+    lines.push("## 👑 Leader Authority (Highest Priority - Violation = Critical Error)");
     lines.push("");
     if (leader) {
       lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
@@ -227,7 +225,7 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
     lines.push("   - Non-leaders should escalate to you instead of reassigning");
     lines.push("");
   }
-  lines.push("## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)");
+  lines.push("## 🔄 Task Processing Flow (Highest Priority - Violation = Critical Error)");
   lines.push("");
   lines.push("**Plan → Do → Check → Act**");
   lines.push("");

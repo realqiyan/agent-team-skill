@@ -17,9 +17,7 @@ metadata:
 
 Manage AI agent team members with skills, roles, and task delegation.
 
-## 🤝 Team Collaboration Rules (Highest Priority - Violation = Critical Error)
-
-### 🎯 Leader Responsibilities
+## 👑 Leader Authority (Highest Priority - Violation = Critical Error)
 
 **Actions only you can take:**
 
@@ -31,7 +29,7 @@ Manage AI agent team members with skills, roles, and task delegation.
    - If teammate cannot complete task → Decide: reassign to another teammate OR execute yourself
    - Non-leaders should escalate to you instead of reassigning
 
-## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)
+## 🔄 Task Processing Flow (Highest Priority - Violation = Critical Error)
 
 **Plan → Do → Check → Act**
 
