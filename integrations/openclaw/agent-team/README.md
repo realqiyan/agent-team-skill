@@ -112,8 +112,22 @@ Team data is stored in JSON format:
 
 1. Plugin loads when OpenClaw Gateway starts
 2. Every time AI prompt is built, `before_prompt_build` event triggers
-3. Plugin reads team data file and formats as Markdown
-4. Team information is appended to system context via `appendSystemContext`
+3. Plugin receives `agentId` from OpenClaw context to identify current agent
+4. Plugin reads team data file and formats as Markdown
+5. **Leader Responsibilities section is only injected if current agent is the team leader**
+6. Team information is appended to system context via `appendSystemContext`
+
+### Context-Aware Injection
+
+The plugin uses `PluginHookAgentContext.agentId` to determine which agent is running:
+
+- **If current agent is the leader** (matches `team[id].is_leader === true`):
+  - Injects full Team Members + Leader Responsibilities + Task Execution Rules
+  
+- **If current agent is NOT the leader**:
+  - Injects Team Members + Task Execution Rules (no Leader Responsibilities)
+
+This ensures only the designated leader receives leadership-related prompts.
 
 ## Relationship with Skill
 
@@ -144,3 +158,13 @@ python3 scripts/team.py update \
 # Reset data
 python3 scripts/team.py reset
 ```
+
+## Slash Command
+
+The plugin registers a `/agent-team` command that displays current team members:
+
+```
+/agent-team
+```
+
+This command returns a formatted list of all team members with their roles, expertise, and other details. It's useful for quickly checking the team configuration without invoking the AI agent.

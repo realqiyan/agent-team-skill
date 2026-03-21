@@ -30,11 +30,23 @@ interface PluginConfig {
   enabled?: boolean;
 }
 
-interface BeforePromptBuildContext {
-  messages?: unknown[];
+// OpenClaw 官方钩子类型定义
+interface PluginHookAgentContext {
+  agentId?: string;
+  sessionKey?: string;
+  sessionId?: string;
+  workspaceDir?: string;
+  messageProvider?: string;
+  trigger?: string;
+  channelId?: string;
 }
 
-interface BeforePromptBuildResult {
+interface PluginHookBeforePromptBuildEvent {
+  prompt: string;
+  messages: unknown[];
+}
+
+interface PluginHookBeforePromptBuildResult {
   prependContext?: string;
   systemPrompt?: string;
   prependSystemContext?: string;
@@ -45,9 +57,26 @@ interface PluginApi {
   config: PluginConfig;
   on: (
     event: "before_prompt_build",
-    handler: (event: string, ctx: BeforePromptBuildContext) => BeforePromptBuildResult,
+    handler: (
+      event: PluginHookBeforePromptBuildEvent, 
+      ctx: PluginHookAgentContext
+    ) => PluginHookBeforePromptBuildResult | void,
     options?: { priority?: number }
   ) => void;
+  registerCommand: (command: {
+    name: string;
+    description?: string;
+    acceptsArgs?: boolean;
+    requireAuth?: boolean;
+    handler: (ctx: {
+      senderId?: string;
+      channel?: string;
+      isAuthorizedSender?: boolean;
+      args?: string;
+      commandBody?: string;
+      config?: unknown;
+    }) => { text: string } | Promise<{ text: string }>;
+  }) => void;
 }
 
 // Default data file path
@@ -74,9 +103,60 @@ function loadTeamData(dataFilePath: string): TeamData | null {
 }
 
 /**
- * Format team data as markdown for system context
+ * Format team members as simple markdown for command output
  */
-function formatTeamContext(teamData: TeamData): string {
+function formatTeamMembers(teamData: TeamData): string {
+  const members = Object.values(teamData.team).filter((m) => m.enabled !== false);
+
+  if (members.length === 0) {
+    return "No team members configured.";
+  }
+
+  // Find leader
+  const leader = members.find((m) => m.is_leader);
+
+  const lines: string[] = [
+    "## Team Members",
+    "",
+  ];
+
+  for (const member of members) {
+    const isLeader = member.is_leader;
+    const tagsStr = member.tags.join(", ");
+    const expertiseStr = member.expertise.join(", ");
+    const notGoodAtStr = member.not_good_at.join(", ");
+
+    if (isLeader) {
+      lines.push(`**${member.name}** ⭐ ${member.role} (Leader)`);
+    } else {
+      lines.push(`**${member.name}** - ${member.role}`);
+    }
+    lines.push(`- agent_id: \`${member.agent_id}\``);
+    if (tagsStr) {
+      lines.push(`- tags: ${tagsStr}`);
+    }
+    if (expertiseStr) {
+      lines.push(`- expertise: ${expertiseStr}`);
+    }
+    if (notGoodAtStr) {
+      lines.push(`- not_good_at: ${notGoodAtStr}`);
+    }
+    lines.push("");
+  }
+
+  if (leader) {
+    lines.push(`Current Leader: **${leader.name}** (\`${leader.agent_id}\`)`);
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Format team data as markdown for system context
+ * @param teamData Team data from JSON file
+ * @param currentAgentId The agent ID of the current session (used to determine leader role)
+ */
+function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   const members = Object.values(teamData.team).filter((m) => m.enabled !== false);
 
   if (members.length === 0) {
@@ -85,6 +165,7 @@ function formatTeamContext(teamData: TeamData): string {
 
   // Find leader
   const leader = members.find((m) => m.is_leader);
+  const isCurrentAgentLeader = leader?.agent_id === currentAgentId;
 
   const lines: string[] = [
     "",
@@ -124,33 +205,35 @@ function formatTeamContext(teamData: TeamData): string {
     lines.push("");
   }
 
-  // Add team collaboration rules
-  lines.push("## 🤝 Team Collaboration Rules (Highest Priority - Violation = Critical Error)");
-  lines.push("");
-  lines.push("### 🎯 Leader Responsibilities");
-  lines.push("");
-  if (leader) {
-    lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
+  // Add team collaboration rules - only show Leader Responsibilities if current agent is leader
+  if (isCurrentAgentLeader) {
+    lines.push("## 🤝 Team Collaboration Rules (Highest Priority - Violation = Critical Error)");
+    lines.push("");
+    lines.push("### 🎯 Leader Responsibilities");
+    lines.push("");
+    if (leader) {
+      lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
+      lines.push("");
+    }
+    lines.push("**Communication is basic, but you are responsible for results:**");
+    lines.push("");
+    lines.push("1. **No blind forwarding**");
+    lines.push("   - Receive task → Assess responsibility → Delegate to the right person");
+    lines.push("   - Clarify requirements before delegating, check output after");
+    lines.push("");
+    lines.push("2. **Critical thinking**");
+    lines.push("   - Challenge problems and results");
+    lines.push("   - If it doesn't meet requirements → Request improvements, don't just pass it along");
+    lines.push("");
+    lines.push("3. **Drive improvements**");
+    lines.push("   - Identify problems and risks");
+    lines.push("   - Proactively discover and solve issues");
+    lines.push("");
+    lines.push("4. **Take responsibility for results**");
+    lines.push("   - Team member's output = Your responsibility");
+    lines.push("   - Quality not up to standard → Provide feedback and iterate until it is");
     lines.push("");
   }
-  lines.push("**Communication is basic, but you are responsible for results:**");
-  lines.push("");
-  lines.push("1. **No blind forwarding**");
-  lines.push("   - Receive task → Assess responsibility → Delegate to the right person");
-  lines.push("   - Clarify requirements before delegating, check output after");
-  lines.push("");
-  lines.push("2. **Critical thinking**");
-  lines.push("   - Challenge problems and results");
-  lines.push("   - If it doesn't meet requirements → Request improvements, don't just pass it along");
-  lines.push("");
-  lines.push("3. **Drive improvements**");
-  lines.push("   - Identify problems and risks");
-  lines.push("   - Proactively discover and solve issues");
-  lines.push("");
-  lines.push("4. **Take responsibility for results**");
-  lines.push("   - Team member's output = Your responsibility");
-  lines.push("   - Quality not up to standard → Provide feedback and iterate until it is");
-  lines.push("");
   lines.push("## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)");
   lines.push("");
   lines.push("**SEARCH → RECORD → ORIENT → PLAN → DISPATCH → REVIEW → UPDATE**");
@@ -241,10 +324,27 @@ export default function register(api: PluginApi): void {
     return;
   }
 
+  // Register /agent-team command
+  api.registerCommand({
+    name: "agent-team",
+    description: "Show current team members",
+    handler: () => {
+      const dataFile = config.dataFile || DEFAULT_DATA_FILE;
+      const teamData = loadTeamData(dataFile);
+
+      if (!teamData) {
+        return { text: `No team data found at ${dataFile}` };
+      }
+
+      const text = formatTeamMembers(teamData);
+      return { text };
+    },
+  });
+
   // Register before_prompt_build hook
   api.on(
     "before_prompt_build",
-    (_event: string, _ctx: BeforePromptBuildContext) => {
+    (_event: PluginHookBeforePromptBuildEvent, ctx: PluginHookAgentContext) => {
       const dataFile = config.dataFile || DEFAULT_DATA_FILE;
       const teamData = loadTeamData(dataFile);
 
@@ -253,13 +353,16 @@ export default function register(api: PluginApi): void {
         return {};
       }
 
-      const context = formatTeamContext(teamData);
+      // Get current agent ID from context, default to "main"
+      const currentAgentId = ctx.agentId || "main";
+      const context = formatTeamContext(teamData, currentAgentId);
+      
       if (!context) {
         console.log("[agent-team] No enabled team members");
         return {};
       }
 
-      console.log(`[agent-team] Injecting team context (${Object.keys(teamData.team).length} members)`);
+      console.log(`[agent-team] Injecting team context for agent "${currentAgentId}" (${Object.keys(teamData.team).length} members)`);
 
       return {
         appendSystemContext: context,
