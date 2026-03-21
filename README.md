@@ -14,7 +14,7 @@ The skill consists of two components that work together:
 The plugin reads team data from `~/.agent-team/team.json` and injects it into the AI agent's context, enabling:
 - Team member awareness
 - Task delegation rules
-- Six-phase workflow: SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW
+- PDCA workflow: Plan → Do → Check → Act
 
 ## Features
 

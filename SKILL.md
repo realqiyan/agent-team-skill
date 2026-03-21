@@ -41,51 +41,79 @@ Manage AI agent team members with skills, roles, and task delegation.
 
 ## 🔄 Task Execution Rules (Highest Priority - Violation = Critical Error)
 
-**SEARCH → RECORD → ORIENT → DISPATCH → UPDATE → REVIEW**
+**Plan → Do → Check → Act**
 
-**IMPORTANT: All tasks must follow this flow without exception.**
+**IMPORTANT: This is a continuous improvement cycle. If task is incomplete in Act phase, loop back to Plan.**
 
-### 1. SEARCH — Context Search
-- Do NOT reply immediately
-- Search historical memory for relevant context first
+---
 
-### 2. RECORD — Progress Logging
-- Record to `memory/YYYY-MM-DD.md`:
-  ```markdown
-  ## In Progress
-  ### [Task Name] (HH:MM start)
-  - Progress: xxx
-  ```
-- Upon completion, update to:
-  ```markdown
-  ### [Task Name] (HH:MM start) ✅
-  - End time: HH:MM | Result: xxx
-  ```
+### 1. Plan — Planning Phase
 
-### 3. ORIENT — Orientation Phase
+**Goal: Prepare thoroughly, avoid blind execution**
+
+- **Search Context**: Search historical memory first, do not respond immediately
 - **Understand Requirements**: What does the user really want?
-- **Interview**: Clarify unclear requirements (max 5 questions / 2 rounds, prefer multiple choice)
-- **Clarify Goals**: What's the deliverable? Success criteria?
+- **Clarify Questions**: Must clarify if unsure (max 5 questions / 2 rounds, prefer multiple choice)
+- **Define Goals**: What's the deliverable? Success criteria?
 - **Identify Risks**: What could go wrong?
-- **Determine Responsibility**: Who's best suited to execute?
+- **Determine Ownership**: Who's best suited to execute? (self or teammate)
+- **Create Plan**: Output specific execution plan
 
-### 4. DISPATCH — Delegate/Execute
-- Determine task ownership (self or team member)
-- **Belongs to team member** → Delegate with full context (SEARCH history + original requirements)
-- **Belongs to self** → Execute directly
-- After each Phase: Create checkpoint:
+---
+
+### 2. Do — Execution Phase
+
+**Goal: Execute the plan while maintaining records**
+
+#### ⚠️ Recording (Highest Priority - Core of Memory)
+
+**Before starting any execution, must record to `memory/YYYY-MM-DD.md`:**
+```markdown
+## In Progress
+### [Task Name] (HH:MM start)
+- Progress: xxx
+```
+
+**Update record upon completion:**
+```markdown
+### [Task Name] (HH:MM start)
+- End time: HH:MM | Result: xxx
+```
+
+#### Execution Actions
+
+- **Delegate or Execute**:
+  - Belongs to teammate → Delegate with full context (search history + original requirements + plan)
+  - Belongs to self → Execute directly
+- **Create Checkpoint**: Create git commit after each sub-phase
   ```bash
-  git add -A && git commit -m "checkpoint: [Task Name] Phase X complete"
+  git add -A && git commit -m "checkpoint: [Task Name] sub-phase complete"
   ```
 
-### 5. UPDATE — Update Progress Status
-- Update progress in `memory/YYYY-MM-DD.md`
-- Can be executed multiple times during task
+---
 
-### 6. REVIEW — Check Task Results
-- Review completed work against requirements
-- If task incomplete → Loop back to SEARCH
-- If task complete → Task finished
+### 3. Check — Checking Phase
+
+**Goal: Verify results, ensure quality**
+
+- Verify results against requirements
+- Check completeness and compliance with standards
+- Record issues and deviations
+
+---
+
+### 4. Act — Acting Phase
+
+**Goal: Summarize experience, decide next steps**
+
+- **Update Record**: Mark final result in `memory/YYYY-MM-DD.md`
+- **Standardize Success**: Record effective practices, consolidate into memory
+- **Improve Weaknesses**: Identify optimization opportunities
+- **Decide Next Steps**:
+  - ✅ Task complete → End
+  - ❌ Task incomplete → Loop back to Plan
+
+---
 
 ### ⚡ Task Delegation Rules (Core Principle)
 
