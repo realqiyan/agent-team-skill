@@ -1,6 +1,6 @@
 ---
 name: agent-team-skill
-description: "Team collaboration and task processing flow with delegation, progress tracking, and multi-agent coordination. Use when team coordination, task delegation, or workflow management is needed."
+description: "Manage AI agent team members with roles, skills, and task delegation. Use when: listing team members, adding/updating agents, setting the team leader, checking who has specific expertise, delegating tasks to the right agent, or coordinating multi-agent workflows. Keywords: team member, agent list, leader, expertise, delegation, PDCA workflow."
 license: MIT
 homepage: https://github.com/realqiyan/agent-team-skill
 allowed-tools: Bash(python3:*) Read(*.json)
