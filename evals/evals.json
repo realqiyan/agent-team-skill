@@ -1,0 +1,29 @@
+{
+  "skill_name": "agent-team-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "查看当前团队有哪些成员",
+      "expected_output": "执行 python3 scripts/team.py list 命令，显示团队成员列表",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "添加一个新成员，名叫 Bob，角色是后端开发，擅长 Python 和 Go，不擅长前端",
+      "expected_output": "执行 update 命令添加新成员，包含正确的参数",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "把 Alice 设为团队 Leader",
+      "expected_output": "执行 update 命令设置 is-leader 为 true",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "我有个任务需要数据库优化，应该分配给谁？",
+      "expected_output": "查看团队成员的 expertise，找到擅长数据库的成员",
+      "files": []
+    }
+  ]
+}
