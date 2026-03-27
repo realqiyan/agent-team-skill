@@ -344,16 +344,25 @@ export default function register(api: PluginApi): void {
         return {};
       }
 
-      // Get current agent ID from context, default to "main"
-      const currentAgentId = ctx.agentId || "main";
-      const context = formatTeamContext(teamData, currentAgentId);
-      
-      if (!context) {
+      const members = Object.values(teamData.team).filter((m) => m.enabled !== false);
+      if (members.length === 0) {
         console.log("[agent-team] No enabled team members");
         return {};
       }
 
-      console.log(`[agent-team] Injecting team context for agent "${currentAgentId}" (${Object.keys(teamData.team).length} members)`);
+      // Get current agent ID from context, default to "main"
+      const currentAgentId = ctx.agentId || "main";
+      const leader = members.find((m) => m.is_leader);
+      const isCurrentAgentLeader = leader?.agent_id === currentAgentId;
+
+      // Only inject team context for leader
+      if (!isCurrentAgentLeader) {
+        console.log(`[agent-team] Agent "${currentAgentId}" is not leader, skipping team context injection`);
+        return {};
+      }
+
+      const context = formatTeamContext(teamData, currentAgentId);
+      console.log(`[agent-team] Injecting team context for leader "${currentAgentId}" (${members.length} members)`);
 
       return {
         appendSystemContext: context,
