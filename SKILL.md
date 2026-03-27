@@ -110,6 +110,11 @@ List all team member information:
 python3 scripts/team.py list
 ```
 
+**Common scenarios:**
+- Check who is the current team leader
+- Find members with specific expertise before task assignment
+- Review team structure and available roles
+
 Output example:
 ```markdown
 ## Team Members
@@ -161,16 +166,65 @@ Clear all team data and reset to initial state:
 python3 scripts/team.py reset
 ```
 
-⚠️ This operation will clear all data in `~/.agent-team/team.json`.
+Output:
+```
+Team data has been reset.
+```
+
+⚠️ **Warning**: This operation is irreversible. All data in `~/.agent-team/team.json` will be permanently deleted.
 
 ## Data Storage
 
 Team data is stored in `~/.agent-team/team.json`, shared globally. Directory is auto-created if it doesn't exist.
 
-## Use Cases
+## Common Use Cases
 
-- **Team Maintenance**: Record all members and their skill information
-- **Task Assignment**: Assign tasks based on member expertise and tags
+### Finding the right person for a task
+```bash
+# List team to find member with relevant expertise
+python3 scripts/team.py list
+# Look for matching tags/expertise in the output
+```
+
+### Changing team leader
+Setting a new leader automatically removes leader status from the previous one:
+```bash
+python3 scripts/team.py update --agent-id "alice" --name "Alice" --role "Team Lead" --is-leader "true" --enabled "true" --tags "coordination,planning" --expertise "management,decision-making" --not-good-at "specialized-development"
+```
+
+### Temporarily disabling a member
+Set `--enabled "false"` to disable without removing:
+```bash
+python3 scripts/team.py update --agent-id "bob" --name "Bob" --role "Backend Developer" --is-leader "false" --enabled "false" --tags "backend,api" --expertise "Python,Go" --not-good-at "frontend"
+```
+
+### Adding a new team member
+```bash
+python3 scripts/team.py update --agent-id "charlie" --name "Charlie" --role "Frontend Developer" --is-leader "false" --enabled "true" --tags "frontend,ui" --expertise "React,TypeScript" --not-good-at "backend,database"
+```
+
+## Error Handling
+
+### Data file not found
+If `~/.agent-team/team.json` doesn't exist, the script returns an empty team state (no error raised).
+
+### Invalid JSON
+If the data file is corrupted, the script logs an error and returns an empty state:
+```
+[agent-team] Error loading team data: <error message>
+```
+
+### Missing required parameters
+Running `update` without required parameters:
+```
+error: the following arguments are required: --agent-id, --name, --role, --is-leader, --enabled, --tags, --expertise, --not-good-at
+```
+
+### Single leader constraint
+Only one leader can exist. Setting a new leader automatically removes leader status from the previous one:
+```
+Note: Removed leader status from <previous-leader-name>
+```
 
 ## References
 
