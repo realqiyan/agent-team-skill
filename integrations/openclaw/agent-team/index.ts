@@ -19,6 +19,8 @@ interface TeamMember {
   tags: string[];
   expertise: string[];
   not_good_at: string[];
+  load_workflow?: boolean;
+  group?: string;
 }
 
 interface TeamData {
@@ -30,7 +32,6 @@ interface PluginConfig {
   enabled?: boolean;
 }
 
-// OpenClaw 官方钩子类型定义
 interface PluginHookAgentContext {
   agentId?: string;
   sessionKey?: string;
@@ -147,36 +148,12 @@ function formatMember(member: TeamMember, options: { compact?: boolean } = {}): 
     lines.push(`- not_good_at: ${notGoodAtStr}`);
   }
 
+  // Show load_workflow if set
+  if (member.load_workflow !== undefined) {
+    lines.push(`- load_workflow: ${member.load_workflow}`);
+  }
+
   return lines;
-}
-
-/**
- * Format team members as simple markdown for command output
- */
-function formatTeamMembers(teamData: TeamData): string {
-  const members = Object.values(teamData.team).filter((m) => m.enabled !== false);
-
-  if (members.length === 0) {
-    return "No team members configured.";
-  }
-
-  const leader = members.find((m) => m.is_leader);
-
-  const lines: string[] = [
-    "## Team Members",
-    "",
-  ];
-
-  for (const member of members) {
-    lines.push(...formatMember(member));
-    lines.push("");
-  }
-
-  if (leader) {
-    lines.push(`Current Leader: **${leader.name}** (\`${leader.agent_id}\`)`);
-  }
-
-  return lines.join("\n");
 }
 
 /**
@@ -201,96 +178,37 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
     "",
   ];
 
+  // Group members by 'group' field
+  const grouped: Record<string, TeamMember[]> = {};
   for (const member of members) {
+    const groupKey = member.group ?? "";
+    if (!grouped[groupKey]) {
+      grouped[groupKey] = [];
+    }
+    grouped[groupKey].push(member);
+  }
+
+  // Display grouped members (ungrouped first, then grouped)
+  const ungrouped = grouped[""] || [];
+  const groupedKeys = Object.keys(grouped).filter((k) => k !== "").sort();
+
+  // Ungrouped members
+  for (const member of ungrouped) {
     lines.push(...formatMember(member, { compact: true }));
     lines.push("");
   }
 
-  // Add team collaboration rules - only show Leader Authority if current agent is leader
-  if (isCurrentAgentLeader) {
-    lines.push("## 👑 Leader Authority (Highest Priority - Violation = Critical Error)");
+  // Grouped members
+  for (const groupKey of groupedKeys) {
+    lines.push(`### Group: ${groupKey}`);
     lines.push("");
-    if (leader) {
-      lines.push(`**Current Leader: ${leader.name} (${leader.agent_id})**`);
+    for (const member of grouped[groupKey]) {
+      lines.push(...formatMember(member, { compact: true }));
       lines.push("");
     }
-    lines.push("**Actions only you can take:**");
-    lines.push("");
-    lines.push("1. **Approve task completion**");
-    lines.push("   - Before marking any task complete, verify output meets original requirements");
-    lines.push("   - If incomplete → Send back for revision with specific feedback");
-    lines.push("");
-    lines.push("2. **Reassign when delegation fails**");
-    lines.push("   - If teammate cannot complete task → Decide: reassign to another teammate OR execute yourself");
-    lines.push("   - Non-leaders should escalate to you instead of reassigning");
-    lines.push("");
   }
-  lines.push("## 🔄 Task Processing Flow (Highest Priority - Violation = Critical Error)");
-  lines.push("");
-  lines.push("**Plan → Do → Check → Act**");
-  lines.push("");
-  lines.push("**IMPORTANT: This is a continuous improvement cycle. If task is incomplete in Act phase, loop back to Plan.**");
-  lines.push("");
-  lines.push("### 1. Plan — Planning Phase");
-  lines.push("");
-  lines.push("**Goal: Prepare thoroughly, avoid blind execution**");
-  lines.push("");
-  lines.push("- **Search Context**: Search historical memory first, do not respond immediately");
-  lines.push("- **Understand Requirements**: What does the user really want?");
-  lines.push("- **Clarify Questions**: Must clarify if unsure (ask clearly in one go when possible, max 3 rounds)");
-  lines.push("- **Define Goals**: What's the deliverable? Success criteria?");
-  lines.push("- **Identify Risks**: What could go wrong?");
-  lines.push("- **Determine Ownership**: Who's best suited to execute? (self or teammate)");
-  lines.push("- **Create Plan**: Output specific execution plan");
-  lines.push("");
-  lines.push("### 2. Do — Execution Phase");
-  lines.push("");
-  lines.push("**Goal: Execute the plan while maintaining records**");
-  lines.push("");
-  lines.push("#### ⚠️ Recording (Highest Priority - Core of Memory)");
-  lines.push("");
-  lines.push("**Before starting any execution, must record to `memory/YYYY-MM-DD.md`:**");
-  lines.push("```");
-  lines.push("## In Progress");
-  lines.push("### [Task Name] (HH:MM start)");
-  lines.push("- Progress: xxx");
-  lines.push("```");
-  lines.push("");
-  lines.push("**Update record upon completion:**");
-  lines.push("```");
-  lines.push("### [Task Name] (HH:MM start)");
-  lines.push("- End time: HH:MM | Result: xxx");
-  lines.push("```");
-  lines.push("");
-  lines.push("#### Execution Actions");
-  lines.push("");
-  lines.push("- **Delegate or Execute**:");
-  lines.push("  - Belongs to teammate → Delegate with full context (search history + original requirements + plan)");
-  lines.push("  - Belongs to self → Execute directly");
-  lines.push("- **Create Checkpoint**: Create git commit after each sub-phase");
-  lines.push("  ```bash");
-  lines.push("  git add -A && git commit -m \"checkpoint: [Task Name] sub-phase complete\"");
-  lines.push("  ```");
-  lines.push("");
-  lines.push("### 3. Check — Checking Phase");
-  lines.push("");
-  lines.push("**Goal: Verify results, ensure quality**");
-  lines.push("");
-  lines.push("- Verify results against requirements");
-  lines.push("- Check completeness and compliance with standards");
-  lines.push("- Record issues and deviations");
-  lines.push("");
-  lines.push("### 4. Act — Acting Phase");
-  lines.push("");
-  lines.push("**Goal: Summarize experience, decide next steps**");
-  lines.push("");
-  lines.push("- **Update Record**: Mark final result in `memory/YYYY-MM-DD.md`");
-  lines.push("- **Standardize Success**: Record effective practices, consolidate into memory");
-  lines.push("- **Improve Weaknesses**: Identify optimization opportunities");
-  lines.push("- **Decide Next Steps**:");
-  lines.push("  - ✅ Task complete → End");
-  lines.push("  - ❌ Task incomplete → Loop back to Plan");
-  lines.push("");
+
+  // Task Delegation Rules - always show after Team Members
   lines.push("### ⚡ Task Delegation Rules (Core Principle)");
   lines.push("");
   lines.push("**Delegation Timing:**");
@@ -298,6 +216,61 @@ function formatTeamContext(teamData: TeamData, currentAgentId: string): string {
   lines.push("2. When entering implementation: identify the best person for execution, delegate to them");
   lines.push("3. Follow up after delegation: check output quality, ensure requirements are met");
   lines.push("");
+  lines.push("**Delegation Context (what to pass):**");
+  lines.push("When delegating, always provide:");
+  lines.push("- Original requirements and success criteria");
+  lines.push("- Relevant background and context");
+  lines.push("- Your execution plan and any constraints");
+  lines.push("- Expected output format");
+  lines.push("");
+  lines.push("**Delegation Failover:**");
+  lines.push("If teammate fails to complete:");
+  lines.push("1. First attempt: Send back with specific feedback for revision");
+  lines.push("2. Second attempt: Reassign to another teammate with adjusted context");
+  lines.push("3. Third attempt: Escalate to leader OR execute yourself");
+  lines.push("");
+
+  // Add PDCA workflow if load_workflow is true (default true for leader)
+  const shouldLoadWorkflow = leader?.load_workflow ?? true;
+  if (shouldLoadWorkflow) {
+    lines.push("## 🔄 Task Processing Flow (Highest Priority)");
+    lines.push("");
+    lines.push("**Plan → Do → Check → Act**");
+    lines.push("");
+    lines.push("**IMPORTANT: This is a continuous improvement cycle. If task is incomplete in Act phase, loop back to Plan.**");
+    lines.push("");
+    lines.push("### 1. Plan — Planning Phase");
+    lines.push("");
+    lines.push("**Goal: Prepare thoroughly, avoid blind execution**");
+    lines.push("");
+    lines.push("- Understand requirements and clarify questions");
+    lines.push("- Define goals and success criteria");
+    lines.push("- Identify risks and determine ownership");
+    lines.push("- Create execution plan");
+    lines.push("");
+    lines.push("### 2. Do — Execution Phase");
+    lines.push("");
+    lines.push("**Goal: Execute the plan while maintaining progress**");
+    lines.push("");
+    lines.push("- Execute or delegate based on ownership");
+    lines.push("- Track progress and key decisions");
+    lines.push("");
+    lines.push("### 3. Check — Checking Phase");
+    lines.push("");
+    lines.push("**Goal: Verify results against requirements**");
+    lines.push("");
+    lines.push("- Verify completeness and quality");
+    lines.push("- Check compliance with standards");
+    lines.push("");
+    lines.push("### 4. Act — Acting Phase");
+    lines.push("");
+    lines.push("**Goal: Summarize and decide next steps**");
+    lines.push("");
+    lines.push("- ✅ Task complete → End");
+    lines.push("- ❌ Task incomplete → Loop back to Plan");
+    lines.push("");
+  }
+
   lines.push("</agent_team>");
 
   return lines.join("\n");
@@ -319,7 +292,7 @@ export default function register(api: PluginApi): void {
   api.registerCommand({
     name: "agent-team",
     description: "Show current team members",
-    handler: () => {
+    handler: (ctx) => {
       const dataFile = config.dataFile || DEFAULT_DATA_FILE;
       const teamData = loadTeamData(dataFile);
 
@@ -327,7 +300,9 @@ export default function register(api: PluginApi): void {
         return { text: `No team data found at ${dataFile}` };
       }
 
-      const text = formatTeamMembers(teamData);
+      // Use senderId to determine what would be injected
+      const senderId = ctx.senderId || "main";
+      const text = formatTeamContext(teamData, senderId);
       return { text };
     },
   });
