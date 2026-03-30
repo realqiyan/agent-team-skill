@@ -101,11 +101,22 @@ Team data is stored in JSON format:
       "enabled": true,
       "tags": ["backend", "database"],
       "expertise": ["python", "postgresql"],
-      "not_good_at": ["frontend", "design"]
+      "not_good_at": ["frontend", "design"],
+      "load_workflow": true,
+      "group": "backend-team"
     }
   }
 }
 ```
+
+### New Fields (Optional)
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `load_workflow` | boolean | `true` for leader, `false` for others | Whether to inject PDCA workflow prompts |
+| `group` | string | `null` | Group name for categorizing members |
+
+These fields are optional and backward compatible with older data files.
 
 ## How It Works
 
@@ -121,12 +132,13 @@ Team data is stored in JSON format:
 The plugin uses `PluginHookAgentContext.agentId` to determine which agent is running:
 
 - **If current agent is the leader** (matches `team[id].is_leader === true`):
-  - Injects full Team Members + Leader Authority + Task Processing Flow
+  - Injects full Team Members + Leader Authority
+  - Injects Task Processing Flow only if `load_workflow` is true (default)
 
 - **If current agent is NOT the leader**:
-  - Injects Team Members + Task Processing Flow (no Leader Authority)
+  - No team context is injected (plugin returns empty)
 
-This ensures only the designated leader receives leadership-related prompts.
+This ensures only the designated leader receives leadership-related prompts, and the PDCA workflow can be disabled per-member using `load_workflow: false`.
 
 ## Relationship with Skill
 
@@ -152,7 +164,9 @@ python3 scripts/team.py update \
   --enabled true \
   --tags "backend,database" \
   --expertise "python,postgresql" \
-  --not-good-at "frontend,design"
+  --not-good-at "frontend,design" \
+  --load-workflow true \
+  --group "backend-team"
 
 # Reset data
 python3 scripts/team.py reset
